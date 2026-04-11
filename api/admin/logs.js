@@ -1,4 +1,4 @@
-import pool from '../_lib/db.js'
+import { supabase } from '../_lib/supabase.js'
 import { success, fail, sendJson } from '../_lib/response.js'
 import { authMiddleware } from '../_lib/auth.js'
 
@@ -10,20 +10,20 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       const { order_id, page = 1, limit = 50 } = req.query
       const offset = (parseInt(page) - 1) * parseInt(limit)
-      let where = ''
-      const params = []
-      let paramIdx = 1
+
+      let query = supabase
+        .from('order_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(offset, offset + parseInt(limit) - 1)
+
       if (order_id) {
-        where = `WHERE order_id = $${paramIdx}`
-        params.push(order_id)
-        paramIdx++
+        query = query.eq('order_id', order_id)
       }
 
-      const { rows } = await pool.query(
-        `SELECT * FROM order_logs ${where} ORDER BY created_at DESC LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
-        [...params, parseInt(limit), offset]
-      )
-      return sendJson(res, success(rows))
+      const { data, error } = await query
+      if (error) throw error
+      return sendJson(res, success(data || []))
     }
     return sendJson(res, fail('Method not allowed', -1, 405))
   } catch (err) {

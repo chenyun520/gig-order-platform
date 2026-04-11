@@ -1,4 +1,4 @@
-import pool from '../../_lib/db.js'
+import { supabase } from '../../_lib/supabase.js'
 import { success, fail, sendJson } from '../../_lib/response.js'
 import { authMiddleware } from '../../_lib/auth.js'
 
@@ -21,48 +21,45 @@ export default async function handler(req, res) {
       const { status, quoted_price, remark } = req.body
 
       // Get current order
-      const { rows: existing } = await pool.query('SELECT * FROM orders WHERE id = $1', [id])
-      if (existing.length === 0) return sendJson(res, fail('Order not found', -1, 404))
+      const { data: existing, error: fetchErr } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', id)
+        .single()
+      if (fetchErr || !existing) return sendJson(res, fail('Order not found', -1, 404))
 
-      const updates = []
-      const params = []
-      let paramIdx = 1
-
+      const updates = {}
       if (status) {
-        updates.push(`status = $${paramIdx}`)
-        params.push(status)
-        paramIdx++
-        // Auto-set timestamp
+        updates.status = status
         if (STATUS_TIMESTAMPS[status]) {
-          updates.push(`${STATUS_TIMESTAMPS[status]} = NOW()`)
+          updates[STATUS_TIMESTAMPS[status]] = new Date().toISOString()
         }
       }
-      if (quoted_price !== undefined) {
-        updates.push(`quoted_price = $${paramIdx}`)
-        params.push(quoted_price)
-        paramIdx++
-      }
-      if (remark !== undefined) {
-        updates.push(`remark = $${paramIdx}`)
-        params.push(remark)
-        paramIdx++
-      }
+      if (quoted_price !== undefined) updates.quoted_price = quoted_price
+      if (remark !== undefined) updates.remark = remark
 
-      if (updates.length === 0) return sendJson(res, fail('No fields to update'))
+      if (Object.keys(updates).length === 0) return sendJson(res, fail('No fields to update'))
 
-      params.push(id)
-      await pool.query(`UPDATE orders SET ${updates.join(', ')} WHERE id = $${paramIdx}`, params)
+      const { error: updateErr } = await supabase
+        .from('orders')
+        .update(updates)
+        .eq('id', id)
+      if (updateErr) throw updateErr
 
       // Log
       const action = status || 'updated'
       const note = remark || (quoted_price !== undefined ? `报价: ¥${quoted_price}` : '状态更新')
-      await pool.query(
-        'INSERT INTO order_logs (order_id, action, note) VALUES ($1, $2, $3)',
-        [id, action, note]
-      )
+      await supabase
+        .from('order_logs')
+        .insert({ order_id: id, action, note })
 
-      const { rows: updated } = await pool.query('SELECT * FROM orders WHERE id = $1', [id])
-      return sendJson(res, success(updated[0]))
+      const { data: updated } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      return sendJson(res, success(updated))
     }
 
     return sendJson(res, fail('Method not allowed', -1, 405))

@@ -1,4 +1,4 @@
-import pool from '../_lib/db.js'
+import { supabase } from '../_lib/supabase.js'
 import { success, fail, sendJson } from '../_lib/response.js'
 import { authMiddleware } from '../_lib/auth.js'
 
@@ -10,33 +10,29 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       const { status, page = 1, limit = 20 } = req.query
       const offset = (parseInt(page) - 1) * parseInt(limit)
-      let where = ''
-      const params = []
-      let paramIdx = 1
+
+      let query = supabase
+        .from('orders')
+        .select('*, services(title)', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(offset, offset + parseInt(limit) - 1)
+
       if (status) {
-        where = `WHERE o.status = $${paramIdx}`
-        params.push(status)
-        paramIdx++
+        query = query.eq('status', status)
       }
 
-      const { rows } = await pool.query(
-        `SELECT o.*, s.title as service_title
-         FROM orders o
-         JOIN services s ON o.service_id = s.id
-         ${where}
-         ORDER BY o.created_at DESC
-         LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
-        [...params, parseInt(limit), offset]
-      )
+      const { data, count, error } = await query
+      if (error) throw error
 
-      const { rows: countResult } = await pool.query(
-        `SELECT COUNT(*) as total FROM orders o ${where}`,
-        params
-      )
+      const list = (data || []).map(o => ({
+        ...o,
+        service_title: o.services?.title || '',
+      }))
+      list.forEach(o => delete o.services)
 
       return sendJson(res, success({
-        list: rows,
-        total: countResult[0].total,
+        list,
+        total: count,
         page: parseInt(page),
         limit: parseInt(limit),
       }))

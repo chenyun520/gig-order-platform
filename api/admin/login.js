@@ -1,4 +1,4 @@
-import pool from '../_lib/db.js'
+import { supabase } from '../_lib/supabase.js'
 import { success, fail, sendJson } from '../_lib/response.js'
 import { signToken } from '../_lib/auth.js'
 import bcrypt from 'bcryptjs'
@@ -12,11 +12,15 @@ export default async function handler(req, res) {
     if (!username || !password) {
       return sendJson(res, fail('Username and password are required'))
     }
-    const { rows } = await pool.query('SELECT * FROM admins WHERE username = $1', [username])
-    if (rows.length === 0) {
+    const { data: admins, error } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('username', username)
+    if (error) throw error
+    if (!admins || admins.length === 0) {
       return sendJson(res, fail('Invalid credentials'))
     }
-    const admin = rows[0]
+    const admin = admins[0]
     const valid = await bcrypt.compare(password, admin.password_hash)
     if (!valid) {
       return sendJson(res, fail('Invalid credentials'))

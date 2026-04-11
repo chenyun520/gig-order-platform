@@ -1,4 +1,4 @@
-import pool from '../_lib/db.js'
+import { supabase } from '../_lib/supabase.js'
 import { success, fail, sendJson } from '../_lib/response.js'
 import { authMiddleware } from '../_lib/auth.js'
 
@@ -9,29 +9,25 @@ export default async function handler(req, res) {
   try {
     if (req.method !== 'GET') return sendJson(res, fail('Method not allowed', -1, 405))
 
-    const { rows: todayOrders } = await pool.query(
-      'SELECT COUNT(*) as count FROM orders WHERE created_at::date = CURRENT_DATE'
-    )
-    const { rows: inProgress } = await pool.query(
-      "SELECT COUNT(*) as count FROM orders WHERE status IN ('confirmed','in_progress')"
-    )
-    const { rows: completed } = await pool.query(
-      'SELECT COUNT(*) as count FROM orders WHERE status = $1',
-      ['completed']
-    )
-    const { rows: totalRevenue } = await pool.query(
-      "SELECT COALESCE(SUM(quoted_price), 0) as total FROM orders WHERE status IN ('completed','delivered')"
-    )
-    const { rows: pendingPayment } = await pool.query(
-      "SELECT COUNT(*) as count FROM orders WHERE status = 'pending'"
-    )
+    const today = new Date().toISOString().slice(0, 10) + 'T00:00:00'
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10) + 'T00:00:00'
+
+    const [todayOrders, inProgress, completed, allOrders, pendingPayment] = await Promise.all([
+      supabase.from('orders').select('*', { count: 'exact', head: true }).gte('created_at', today).lt('created_at', tomorrow),
+      supabase.from('orders').select('*', { count: 'exact', head: true }).in('status', ['confirmed', 'in_progress']),
+      supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'completed'),
+      supabase.from('orders').select('quoted_price').in('status', ['completed', 'delivered']),
+      supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+    ])
+
+    const totalRevenue = (allOrders.data || []).reduce((sum, o) => sum + (parseFloat(o.quoted_price) || 0), 0)
 
     sendJson(res, success({
-      todayOrders: todayOrders[0].count,
-      inProgress: inProgress[0].count,
-      completed: completed[0].count,
-      totalRevenue: totalRevenue[0].total,
-      pendingPayment: pendingPayment[0].count,
+      todayOrders: todayOrders.count,
+      inProgress: inProgress.count,
+      completed: completed.count,
+      totalRevenue,
+      pendingPayment: pendingPayment.count,
     }))
   } catch (err) {
     console.error(err)

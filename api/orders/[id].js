@@ -1,4 +1,4 @@
-import pool from '../_lib/db.js'
+import { supabase } from '../_lib/supabase.js'
 import { success, fail, sendJson } from '../_lib/response.js'
 
 export default async function handler(req, res) {
@@ -10,22 +10,29 @@ export default async function handler(req, res) {
     if (!id || !phone) {
       return sendJson(res, fail('Order ID and phone number are required'))
     }
-    const { rows } = await pool.query(
-      `SELECT o.*, s.title as service_title, s.description as service_desc, s.price_type, s.unit
-       FROM orders o
-       JOIN services s ON o.service_id = s.id
-       WHERE o.id = $1 AND o.contact_phone = $2`,
-      [id, phone]
-    )
-    if (rows.length === 0) {
+    const { data: order, error } = await supabase
+      .from('orders')
+      .select('*, services(title, description, price_type, unit)')
+      .eq('id', id)
+      .eq('contact_phone', phone)
+      .single()
+    if (error || !order) {
       return sendJson(res, fail('Order not found', -1, 404))
     }
+
     // Get logs
-    const { rows: logs } = await pool.query(
-      'SELECT * FROM order_logs WHERE order_id = $1 ORDER BY created_at ASC',
-      [id]
-    )
-    sendJson(res, success({ ...rows[0], logs }))
+    const { data: logs } = await supabase
+      .from('order_logs')
+      .select('*')
+      .eq('order_id', id)
+      .order('created_at', { ascending: true })
+
+    // Flatten service info
+    const flat = { ...order, service_title: order.services?.title, service_desc: order.services?.description, price_type: order.services?.price_type, unit: order.services?.unit }
+    delete flat.services
+    flat.logs = logs || []
+
+    sendJson(res, success(flat))
   } catch (err) {
     console.error(err)
     sendJson(res, fail('Failed to fetch order', -1, 500))

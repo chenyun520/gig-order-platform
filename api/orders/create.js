@@ -1,4 +1,4 @@
-import pool from '../_lib/db.js'
+import { supabase } from '../_lib/supabase.js'
 import { success, fail, sendJson } from '../_lib/response.js'
 
 export default async function handler(req, res) {
@@ -12,31 +12,31 @@ export default async function handler(req, res) {
       return sendJson(res, fail('Missing required fields: service_id, contact_name, contact_phone'))
     }
 
-    // Generate order number: GO + date + sequence
+    // Generate order number: GO + date + random 3-digit
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-    const { rows: countResult } = await pool.query(
-      'SELECT COUNT(*) as cnt FROM orders WHERE created_at::date = CURRENT_DATE'
-    )
-    const seq = String(Number(countResult[0].cnt) + 1).padStart(3, '0')
-    const order_no = `GO${dateStr}${seq}`
+    const rand = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
+    const order_no = `GO${dateStr}${rand}`
 
-    const { rows: result } = await pool.query(
-      `INSERT INTO orders (order_no, service_id, contact_name, contact_phone, requirement_desc, attachment_urls)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id`,
-      [order_no, service_id, contact_name, contact_phone, requirement_desc || '', JSON.stringify(attachment_urls || [])]
-    )
-
-    const newId = result[0].id
+    const { data: order, error } = await supabase
+      .from('orders')
+      .insert({
+        order_no,
+        service_id,
+        contact_name,
+        contact_phone,
+        requirement_desc: requirement_desc || '',
+        attachment_urls: attachment_urls || [],
+      })
+      .select()
+      .single()
+    if (error) throw error
 
     // Log
-    await pool.query(
-      'INSERT INTO order_logs (order_id, action, note) VALUES ($1, $2, $3)',
-      [newId, 'created', '订单创建']
-    )
+    await supabase
+      .from('order_logs')
+      .insert({ order_id: order.id, action: 'created', note: '订单创建' })
 
-    const { rows: newOrder } = await pool.query('SELECT * FROM orders WHERE id = $1', [newId])
-    sendJson(res, success(newOrder[0]))
+    sendJson(res, success(order))
   } catch (err) {
     console.error(err)
     sendJson(res, fail('Failed to create order', -1, 500))

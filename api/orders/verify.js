@@ -1,4 +1,4 @@
-import pool from '../_lib/db.js'
+import { supabase } from '../_lib/supabase.js'
 import { success, fail, sendJson } from '../_lib/response.js'
 
 export default async function handler(req, res) {
@@ -10,15 +10,21 @@ export default async function handler(req, res) {
     if (!phone) {
       return sendJson(res, fail('Phone number is required'))
     }
-    const { rows } = await pool.query(
-      `SELECT o.order_no, o.status, o.created_at, o.quoted_price, s.title as service_title
-       FROM orders o
-       JOIN services s ON o.service_id = s.id
-       WHERE o.contact_phone = $1
-       ORDER BY o.created_at DESC`,
-      [phone]
-    )
-    sendJson(res, success(rows))
+    const { data, error } = await supabase
+      .from('orders')
+      .select('order_no, status, created_at, quoted_price, services(title)')
+      .eq('contact_phone', phone)
+      .order('created_at', { ascending: false })
+    if (error) throw error
+
+    const result = data.map(o => ({
+      order_no: o.order_no,
+      status: o.status,
+      created_at: o.created_at,
+      quoted_price: o.quoted_price,
+      service_title: o.services?.title || '',
+    }))
+    sendJson(res, success(result))
   } catch (err) {
     console.error(err)
     sendJson(res, fail('Failed to query orders', -1, 500))
