@@ -18,7 +18,7 @@
           <OrderForm :service="service" @submitted="handleOrder" />
         </template>
         <template v-else>
-          <QrPayment :order="ordered" />
+          <QrPayment :order="ordered" :mode="orderMode" />
         </template>
       </div>
     </div>
@@ -39,6 +39,7 @@ import QrPayment from '../components/QrPayment.vue'
 const route = useRoute()
 const service = ref(null)
 const ordered = ref(null)
+const orderMode = ref('pay')
 
 onMounted(async () => {
   try {
@@ -49,8 +50,9 @@ onMounted(async () => {
   }
 })
 
-async function handleOrder(formData) {
+async function handleOrder(formData, mode) {
   try {
+    orderMode.value = mode
     const res = await orderApi.create(formData)
     ordered.value = res.data
   } catch (e) {

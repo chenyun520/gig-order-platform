@@ -1,5 +1,5 @@
 <template>
-  <form class="order-form" @submit.prevent="submit">
+  <form class="order-form" @submit.prevent="submit('pay')">
     <h3 class="order-form__title">
       <template v-if="service.price_type !== 'quote'">
         下单 — ¥{{ service.price }}/{{ service.unit }}
@@ -24,9 +24,14 @@
       <textarea v-model="form.requirement_desc" class="field__input field__textarea" placeholder="请详细描述你的需求..." rows="4"></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary btn-lg order-form__submit" :disabled="submitting">
-      {{ submitting ? '提交中...' : '提交订单' }}
-    </button>
+    <div class="order-form__actions">
+      <button type="button" class="btn btn-primary btn-lg order-form__btn" :disabled="submitting" @click="submit('pay')">
+        {{ submitting === 'pay' ? '提交中...' : '立即支付' }}
+      </button>
+      <button type="button" class="btn btn-outline btn-lg order-form__btn" :disabled="submitting" @click="submit('quote')">
+        {{ submitting === 'quote' ? '提交中...' : '提需求获取报价' }}
+      </button>
+    </div>
   </form>
 </template>
 
@@ -47,11 +52,11 @@ const form = reactive({
 
 const submitting = ref(false)
 
-async function submit() {
+async function submit(mode) {
   if (!form.contact_name || !form.contact_phone) return
-  submitting.value = true
+  submitting.value = mode
   try {
-    emit('submitted', { ...form, service_id: props.service.id })
+    emit('submitted', { ...form, service_id: props.service.id }, mode)
   } finally {
     submitting.value = false
   }
@@ -100,8 +105,14 @@ async function submit() {
   min-height: 100px;
 }
 
-.order-form__submit {
+.order-form__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+
+.order-form__btn {
   width: 100%;
-  margin-top: var(--space-3);
 }
 </style>

@@ -15,13 +15,30 @@
           <span class="status__label">服务项目</span>
           <span>{{ order.service_title }}</span>
         </div>
-        <div class="status__row" v-if="order.quoted_price || order.price">
-          <span class="status__label">金额</span>
-          <span class="status__price">¥{{ order.quoted_price || order.price }}</span>
+        <div class="status__row" v-if="order.requirement_desc">
+          <span class="status__label">需求描述</span>
+          <span class="status__desc">{{ order.requirement_desc }}</span>
+        </div>
+        <div class="status__row" v-if="order.quoted_price">
+          <span class="status__label">报价金额</span>
+          <span class="status__price">¥{{ order.quoted_price }}</span>
         </div>
         <div class="status__row">
           <span class="status__label">下单时间</span>
           <span>{{ formatDate(order.created_at) }}</span>
+        </div>
+      </div>
+
+      <!-- 报价待付款：显示收款码 -->
+      <div class="status__pay" v-if="showPayment">
+        <div class="status__pay-amount" v-if="order.quoted_price">
+          应付金额：<strong>¥{{ order.quoted_price }}</strong>
+        </div>
+        <img src="/qr/payment.jpg" alt="收款码" class="status__pay-qr" />
+        <p class="status__pay-hint">扫码完成付款后，联系我确认</p>
+        <div class="status__pay-contact">
+          <button class="btn btn-outline btn-sm" @click="copyToClipboard('826857706', 'QQ号已复制')">QQ: 826857706</button>
+          <button class="btn btn-outline btn-sm" @click="copyToClipboard('ZQFservice', '微信号已复制')">微信: ZQFservice</button>
         </div>
       </div>
 
@@ -35,6 +52,10 @@
         <p>{{ order.remark }}</p>
       </div>
     </div>
+
+    <div class="container" v-else style="text-align: center; padding: 4rem 0;">
+      <p style="color: var(--color-gray-400)">加载中...</p>
+    </div>
   </div>
 </template>
 
@@ -43,8 +64,10 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import orderApi from '../api/orders'
 import OrderTimeline from '../components/OrderTimeline.vue'
+import { useToast } from '../composables/useToast'
 
 const route = useRoute()
+const toast = useToast()
 const order = ref(null)
 
 const statusLabels = {
@@ -60,8 +83,27 @@ const statusColors = {
 const statusLabel = computed(() => statusLabels[order.value?.status] || '')
 const statusColor = computed(() => statusColors[order.value?.status] || '#000')
 
+// 显示付款区域：待付款 + 有报价
+const showPayment = computed(() => {
+  return order.value?.status === 'pending' && order.value?.quoted_price
+})
+
 function formatDate(d) {
   return d ? new Date(d).toLocaleString('zh-CN') : ''
+}
+
+function copyToClipboard(text, msg) {
+  navigator.clipboard.writeText(text).then(() => {
+    toast.show(msg)
+  }).catch(() => {
+    const ta = document.createElement('textarea')
+    ta.value = text
+    document.body.appendChild(ta)
+    ta.select()
+    document.execCommand('copy')
+    document.body.removeChild(ta)
+    toast.show(msg)
+  })
 }
 
 onMounted(async () => {
@@ -130,10 +172,59 @@ onMounted(async () => {
 
 .status__label {
   color: var(--color-gray-500);
+  flex-shrink: 0;
+}
+
+.status__desc {
+  text-align: right;
+  max-width: 70%;
+  line-height: 1.5;
 }
 
 .status__price {
   font-weight: 700;
+  font-size: 1.125rem;
+}
+
+/* Payment section */
+.status__pay {
+  background: var(--color-white);
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.status__pay-amount {
+  font-size: 1.125rem;
+  margin-bottom: var(--space-4);
+}
+
+.status__pay-amount strong {
+  font-size: 1.5rem;
+}
+
+.status__pay-qr {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  margin-bottom: var(--space-3);
+}
+
+.status__pay-hint {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  margin-bottom: var(--space-3);
+}
+
+.status__pay-contact {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .status__section-title {

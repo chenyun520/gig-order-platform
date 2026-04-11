@@ -1,27 +1,38 @@
 <template>
   <div class="qr-payment">
     <div class="qr-payment__card card">
-      <span class="mono-label">订单创建成功</span>
+      <span class="mono-label">{{ mode === 'pay' ? '订单创建成功' : '需求已提交' }}</span>
       <div class="qr-payment__order-row">
         <h3 class="qr-payment__order-no">{{ order.order_no }}</h3>
         <button class="btn btn-sm btn-outline" @click="copyOrderNo">复制</button>
       </div>
 
-      <div class="qr-payment__amount" v-if="displayPrice">
-        ¥{{ displayPrice }}
-      </div>
-      <div class="qr-payment__amount qr-payment__amount--pending" v-else>
-        待报价
-      </div>
+      <!-- 立即支付模式 -->
+      <template v-if="mode === 'pay'">
+        <div class="qr-payment__amount" v-if="displayPrice">
+          ¥{{ displayPrice }}
+        </div>
+        <div class="qr-payment__amount qr-payment__amount--pending" v-else>
+          待报价
+        </div>
+        <div class="qr-payment__qr">
+          <img src="/qr/payment.jpg" alt="收款码" class="qr-payment__img" />
+          <p class="qr-payment__hint">扫码完成付款</p>
+        </div>
+      </template>
 
-      <div class="qr-payment__qr">
-        <img src="/qr/payment.jpg" alt="收款码" class="qr-payment__img" />
-        <p class="qr-payment__hint">扫码完成付款</p>
-      </div>
+      <!-- 获取报价模式 -->
+      <template v-else>
+        <div class="qr-payment__quote-status">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>等待报价中</span>
+        </div>
+        <p class="qr-payment__quote-desc">管理员确认需求后会给出报价，请通过查询订单查看报价金额后再付款。</p>
+      </template>
 
       <!-- 添加好友引导 -->
       <div class="qr-payment__contact">
-        <h4 class="qr-payment__contact-title">付款后请添加好友，发材料给我</h4>
+        <h4 class="qr-payment__contact-title">添加好友，发材料给我</h4>
         <div class="qr-payment__contact-btns">
           <button class="qr-payment__contact-btn" @click="copyToClipboard('826857706', 'QQ号已复制，请前往QQ添加好友')">
             <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
@@ -57,9 +68,8 @@ const toast = useToast()
 
 const props = defineProps({
   order: { type: Object, required: true },
+  mode: { type: String, default: 'pay' },  // 'pay' or 'quote'
 })
-
-defineEmits(['paid'])
 
 const displayPrice = computed(() => {
   if (props.order.quoted_price) return props.order.quoted_price
@@ -150,6 +160,31 @@ function copyToClipboard(text, msg) {
   justify-content: center;
   gap: var(--space-2);
   margin: var(--space-2) 0 var(--space-4);
+}
+
+/* Quote mode */
+.qr-payment__quote-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: #fef9c3;
+  border-radius: var(--radius-pill);
+  font-weight: 540;
+  font-size: 0.9375rem;
+  margin-bottom: var(--space-3);
+}
+
+.qr-payment__quote-status svg {
+  color: #ca8a04;
+}
+
+.qr-payment__quote-desc {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  line-height: 1.6;
+  margin-bottom: var(--space-5);
 }
 
 /* Contact section */
