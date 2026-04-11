@@ -19,9 +19,27 @@
         <p class="qr-payment__hint">扫码完成付款</p>
       </div>
 
-      <button class="btn btn-primary btn-lg qr-payment__btn" @click="$emit('paid')">
-        我已完成付款
-      </button>
+      <!-- 添加好友引导 -->
+      <div class="qr-payment__contact">
+        <h4 class="qr-payment__contact-title">付款后请添加好友，发材料给我</h4>
+        <div class="qr-payment__contact-btns">
+          <button class="qr-payment__contact-btn" @click="copyToClipboard('826857706', 'QQ号已复制，请前往QQ添加好友')">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+            </svg>
+            <span>QQ: 826857706</span>
+            <small>点击复制</small>
+          </button>
+          <button class="qr-payment__contact-btn" @click="copyToClipboard('ZQFservice', '微信号已复制，请前往微信添加好友')">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+              <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.68 4.025c-3.837 0-6.953 2.708-6.953 6.048 0 3.342 3.116 6.048 6.953 6.048.748 0 1.47-.1 2.15-.3a.714.714 0 01.574.08l1.432.84a.276.276 0 00.14.045.24.24 0 00.234-.236c0-.058-.023-.115-.038-.17l-.294-1.12a.477.477 0 01.17-.533c1.478-1.094 2.39-2.761 2.39-4.654 0-3.34-3.117-6.048-6.954-6.048h.2zm-2.136 3.34c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948zm4.272 0c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948z"/>
+            </svg>
+            <span>微信: ZQFservice</span>
+            <small>点击复制</small>
+          </button>
+        </div>
+        <p class="qr-payment__contact-note">加好友后把需求材料发给我，后续沟通都在微信/QQ进行</p>
+      </div>
 
       <div class="qr-payment__footer">
         <router-link to="/" class="qr-payment__link">← 返回首页</router-link>
@@ -56,6 +74,20 @@ function copyOrderNo() {
     toast.show('订单号已复制')
   })
 }
+
+function copyToClipboard(text, msg) {
+  navigator.clipboard.writeText(text).then(() => {
+    toast.show(msg)
+  }).catch(() => {
+    const ta = document.createElement('textarea')
+    ta.value = text
+    document.body.appendChild(ta)
+    ta.select()
+    document.execCommand('copy')
+    document.body.removeChild(ta)
+    toast.show(msg)
+  })
+}
 </script>
 
 <style scoped>
@@ -68,7 +100,7 @@ function copyOrderNo() {
 .qr-payment__card {
   text-align: center;
   padding: var(--space-8);
-  max-width: 400px;
+  max-width: 420px;
   width: 100%;
 }
 
@@ -98,8 +130,8 @@ function copyOrderNo() {
 }
 
 .qr-payment__img {
-  width: 220px;
-  height: 220px;
+  width: 200px;
+  height: 200px;
   object-fit: contain;
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-gray-200);
@@ -112,10 +144,6 @@ function copyOrderNo() {
   color: var(--color-gray-500);
 }
 
-.qr-payment__btn {
-  width: 100%;
-}
-
 .qr-payment__order-row {
   display: flex;
   align-items: center;
@@ -124,10 +152,75 @@ function copyOrderNo() {
   margin: var(--space-2) 0 var(--space-4);
 }
 
+/* Contact section */
+.qr-payment__contact {
+  background: var(--color-gray-100);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+  text-align: left;
+}
+
+.qr-payment__contact-title {
+  font-size: 0.9375rem;
+  font-weight: 540;
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+
+.qr-payment__contact-btns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.qr-payment__contact-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  transition: all 0.15s;
+}
+
+.qr-payment__contact-btn:hover {
+  border-color: var(--color-black);
+  box-shadow: var(--shadow-sm);
+}
+
+.qr-payment__contact-btn svg {
+  flex-shrink: 0;
+  color: var(--color-gray-600);
+}
+
+.qr-payment__contact-btn span {
+  flex: 1;
+  text-align: left;
+  font-weight: 540;
+}
+
+.qr-payment__contact-btn small {
+  color: var(--color-gray-400);
+  font-size: 0.75rem;
+}
+
+.qr-payment__contact-note {
+  margin-top: var(--space-3);
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+  text-align: center;
+  line-height: 1.5;
+}
+
 .qr-payment__footer {
   display: flex;
   justify-content: space-between;
-  margin-top: var(--space-4);
   padding-top: var(--space-4);
   border-top: 1px solid var(--color-gray-200);
 }

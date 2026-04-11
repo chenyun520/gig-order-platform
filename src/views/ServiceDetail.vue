@@ -18,7 +18,7 @@
           <OrderForm :service="service" @submitted="handleOrder" />
         </template>
         <template v-else>
-          <QrPayment :order="ordered" @paid="handlePaid" />
+          <QrPayment :order="ordered" />
         </template>
       </div>
     </div>
@@ -30,14 +30,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import serviceApi from '../api/services'
 import orderApi from '../api/orders'
 import OrderForm from '../components/OrderForm.vue'
 import QrPayment from '../components/QrPayment.vue'
 
 const route = useRoute()
-const router = useRouter()
 const service = ref(null)
 const ordered = ref(null)
 
@@ -57,10 +56,6 @@ async function handleOrder(formData) {
   } catch (e) {
     alert('下单失败，请稍后重试')
   }
-}
-
-function handlePaid() {
-  router.push(`/order/${ordered.value.id}?phone=${ordered.value.contact_phone}`)
 }
 </script>
 

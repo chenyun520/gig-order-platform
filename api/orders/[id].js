@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     const { data: order, error } = await supabase
       .from('orders')
       .select('*, services(title, description, price_type, unit)')
-      .eq('id', id)
+      .eq('order_no', id)
       .eq('contact_phone', phone)
       .single()
     if (error || !order) {
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     const { data: logs } = await supabase
       .from('order_logs')
       .select('*')
-      .eq('order_id', id)
+      .eq('order_id', order.id)
       .order('created_at', { ascending: true })
 
     // Flatten service info
