@@ -62,9 +62,9 @@ app.get('/api/admin/logs', wrap('./api/admin/logs.js'))
 app.get('/api/admin/stats', wrap('./api/admin/stats.js'))
 app.delete('/api/admin/orders/:id', wrap('./api/admin/orders/[id].js'))
 
-// File routes
-app.post('/api/upload', express.raw({ type: 'multipart/form-data', limit: '4mb' }), wrapRaw('./api/upload.js'))
-app.get('/api/files/*', wrap('./api/files/[...path].js'))
+// File routes (upload + download)
+app.post('/api/files', express.raw({ type: 'multipart/form-data', limit: '4mb' }), wrapRaw('./api/files.js'))
+app.get('/api/files', wrap('./api/files.js'))
 
 const PORT = 3000
 app.listen(PORT, () => {

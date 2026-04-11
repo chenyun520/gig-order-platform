@@ -16,7 +16,7 @@ export default {
     formData.append('order_no', orderNo)
     formData.append('phone', phone)
     formData.append('type', 'attachments')
-    return http.post('/api/upload', formData, {
+    return http.post('/api/files', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 30000,
     }).then(r => r.data)
