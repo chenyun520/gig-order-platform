@@ -25,14 +25,32 @@ export default {
   deleteOrder(id) {
     return http.delete(`/api/admin/orders/${id}`).then(r => r.data)
   },
-  uploadDeliverable(orderId, file) {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('order_id', orderId)
-    formData.append('type', 'deliverables')
-    return http.post('/api/files', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 30000,
+  async uploadDeliverable(orderId, file) {
+    // Phase 1: get signed upload URL
+    const signRes = await http.post('/api/files', {
+      action: 'sign',
+      order_id: orderId,
+      type: 'deliverables',
+      filename: file.name,
+      size: file.size,
+    }).then(r => r.data)
+
+    if (signRes.code !== 0) throw new Error(signRes.message)
+
+    // Phase 2: upload directly to Supabase
+    await fetch(signRes.data.signedUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type || 'application/octet-stream' },
+      body: file,
+    })
+
+    // Phase 3: confirm
+    const fileInfo = { name: file.name, path: signRes.data.path, size: file.size }
+    await http.post('/api/files', {
+      action: 'confirm',
+      order_id: orderId,
+      type: 'deliverables',
+      file_info: fileInfo,
     }).then(r => r.data)
   },
   getLogs(params) {

@@ -212,7 +212,7 @@ async function deleteOrder(order) {
 async function onDeliverableSelect(e) {
   const files = Array.from(e.target.files)
   for (const file of files) {
-    if (file.size > 4 * 1024 * 1024) { alert(`${file.name} 超过4MB`); continue }
+    if (file.size > 50 * 1024 * 1024) { alert(`${file.name} 超过50MB`); continue }
     try {
       await adminApi.uploadDeliverable(actionOrder.value.id, file)
     } catch (err) { alert(`${file.name} 上传失败`) }

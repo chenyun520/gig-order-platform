@@ -10,15 +10,34 @@ export default {
   verify(phone) {
     return http.post('/api/orders/verify', { phone }).then(r => r.data)
   },
-  uploadAttachment(orderNo, phone, file) {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('order_no', orderNo)
-    formData.append('phone', phone)
-    formData.append('type', 'attachments')
-    return http.post('/api/files', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 30000,
+  async uploadAttachment(orderNo, phone, file) {
+    // Phase 1: get signed upload URL
+    const signRes = await http.post('/api/files', {
+      action: 'sign',
+      order_no: orderNo,
+      phone,
+      type: 'attachments',
+      filename: file.name,
+      size: file.size,
+    }).then(r => r.data)
+
+    if (signRes.code !== 0) throw new Error(signRes.message)
+
+    // Phase 2: upload directly to Supabase
+    await fetch(signRes.data.signedUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type || 'application/octet-stream' },
+      body: file,
+    })
+
+    // Phase 3: confirm
+    const fileInfo = { name: file.name, path: signRes.data.path, size: file.size }
+    await http.post('/api/files', {
+      action: 'confirm',
+      order_no: orderNo,
+      phone,
+      type: 'attachments',
+      file_info: fileInfo,
     }).then(r => r.data)
   },
 }

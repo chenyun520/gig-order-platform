@@ -24,25 +24,6 @@ function wrap(handlerPath) {
   }
 }
 
-// Wrap for multipart (raw body)
-function wrapRaw(handlerPath) {
-  return async (req, res) => {
-    const mod = await import(handlerPath)
-    const vercelReq = {
-      method: req.method,
-      body: req.body, // express.raw() populates this as Buffer
-      headers: req.headers,
-      query: { ...req.query, ...req.params },
-    }
-    try {
-      await mod.default(vercelReq, res)
-    } catch (err) {
-      console.error(`Error in ${handlerPath}:`, err)
-      res.status(500).json({ code: -1, data: null, message: 'Internal Server Error' })
-    }
-  }
-}
-
 // Public routes
 app.get('/api/services', wrap('./api/services/index.js'))
 app.get('/api/services/:id', wrap('./api/services/[id].js'))
@@ -62,8 +43,8 @@ app.get('/api/admin/logs', wrap('./api/admin/logs.js'))
 app.get('/api/admin/stats', wrap('./api/admin/stats.js'))
 app.delete('/api/admin/orders/:id', wrap('./api/admin/orders/[id].js'))
 
-// File routes (upload + download)
-app.post('/api/files', express.raw({ type: 'multipart/form-data', limit: '4mb' }), wrapRaw('./api/files.js'))
+// File routes (sign + confirm + download proxy)
+app.post('/api/files', wrap('./api/files.js'))
 app.get('/api/files', wrap('./api/files.js'))
 
 const PORT = 3000

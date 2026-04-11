@@ -37,7 +37,7 @@
           <input type="file" multiple @change="onFileSelect" style="display:none" />
           <span>+ 选择文件</span>
         </label>
-        <p class="order-form__file-hint">最多5个文件，单个不超过4MB</p>
+        <p class="order-form__file-hint">最多5个文件，单个不超过50MB</p>
       </div>
     </div>
 
@@ -73,8 +73,8 @@ const submitting = ref(false)
 function onFileSelect(e) {
   const files = Array.from(e.target.files)
   const valid = files.filter(f => {
-    if (f.size > 4 * 1024 * 1024) {
-      alert(`${f.name} 超过4MB限制`)
+    if (f.size > 50 * 1024 * 1024) {
+      alert(`${f.name} 超过50MB限制`)
       return false
     }
     return true
