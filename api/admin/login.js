@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     if (!username || !password) {
       return sendJson(res, fail('Username and password are required'))
     }
-    const [rows] = await pool.query('SELECT * FROM admins WHERE username = ?', [username])
+    const { rows } = await pool.query('SELECT * FROM admins WHERE username = $1', [username])
     if (rows.length === 0) {
       return sendJson(res, fail('Invalid credentials'))
     }

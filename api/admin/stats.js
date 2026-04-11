@@ -9,20 +9,20 @@ export default async function handler(req, res) {
   try {
     if (req.method !== 'GET') return sendJson(res, fail('Method not allowed', -1, 405))
 
-    const [todayOrders] = await pool.query(
-      'SELECT COUNT(*) as count FROM orders WHERE DATE(created_at) = CURDATE()'
+    const { rows: todayOrders } = await pool.query(
+      'SELECT COUNT(*) as count FROM orders WHERE created_at::date = CURRENT_DATE'
     )
-    const [inProgress] = await pool.query(
+    const { rows: inProgress } = await pool.query(
       "SELECT COUNT(*) as count FROM orders WHERE status IN ('confirmed','in_progress')"
     )
-    const [completed] = await pool.query(
-      'SELECT COUNT(*) as count FROM orders WHERE status = ?',
+    const { rows: completed } = await pool.query(
+      'SELECT COUNT(*) as count FROM orders WHERE status = $1',
       ['completed']
     )
-    const [totalRevenue] = await pool.query(
+    const { rows: totalRevenue } = await pool.query(
       "SELECT COALESCE(SUM(quoted_price), 0) as total FROM orders WHERE status IN ('completed','delivered')"
     )
-    const [pendingPayment] = await pool.query(
+    const { rows: pendingPayment } = await pool.query(
       "SELECT COUNT(*) as count FROM orders WHERE status = 'pending'"
     )
 

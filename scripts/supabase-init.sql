@@ -1,5 +1,3 @@
--- Supabase PostgreSQL initialization
-
 CREATE TABLE IF NOT EXISTS admins (
   id SERIAL PRIMARY KEY,
   username VARCHAR(50) UNIQUE NOT NULL,
@@ -49,7 +47,6 @@ CREATE TABLE IF NOT EXISTS order_logs (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Auto-update updated_at trigger
 CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -64,11 +61,9 @@ CREATE TRIGGER services_updated_at BEFORE UPDATE ON services
 CREATE TRIGGER orders_updated_at BEFORE UPDATE ON orders
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
--- Seed admin (password: admin123)
 INSERT INTO admins (username, password_hash) VALUES ('admin', '$2b$10$s0OPCsgf.KFxvHV1pSAxw.IqXzsQFrW0uZw5sjKIxSqLS3zOfIHrm')
 ON CONFLICT (username) DO NOTHING;
 
--- Seed services
 INSERT INTO services (title, description, price_type, price, unit, icon, sort_order) VALUES
 ('PPT/课件制作', '专业课件设计，教学PPT、培训课件、学术汇报等', 'fixed', 50.00, '页', 'slides', 1),
 ('网页开发', '响应式网站、落地页、个人主页等前端开发', 'quote', NULL, '项目', 'code', 2),

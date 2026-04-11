@@ -14,25 +14,28 @@ export default async function handler(req, res) {
 
     // Generate order number: GO + date + sequence
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-    const [countResult] = await pool.query(
-      'SELECT COUNT(*) as cnt FROM orders WHERE DATE(created_at) = CURDATE()'
+    const { rows: countResult } = await pool.query(
+      'SELECT COUNT(*) as cnt FROM orders WHERE created_at::date = CURRENT_DATE'
     )
-    const seq = String(countResult[0].cnt + 1).padStart(3, '0')
+    const seq = String(Number(countResult[0].cnt) + 1).padStart(3, '0')
     const order_no = `GO${dateStr}${seq}`
 
-    const [result] = await pool.query(
+    const { rows: result } = await pool.query(
       `INSERT INTO orders (order_no, service_id, contact_name, contact_phone, requirement_desc, attachment_urls)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id`,
       [order_no, service_id, contact_name, contact_phone, requirement_desc || '', JSON.stringify(attachment_urls || [])]
     )
 
+    const newId = result[0].id
+
     // Log
     await pool.query(
-      'INSERT INTO order_logs (order_id, action, note) VALUES (?, ?, ?)',
-      [result.insertId, 'created', '订单创建']
+      'INSERT INTO order_logs (order_id, action, note) VALUES ($1, $2, $3)',
+      [newId, 'created', '订单创建']
     )
 
-    const [newOrder] = await pool.query('SELECT * FROM orders WHERE id = ?', [result.insertId])
+    const { rows: newOrder } = await pool.query('SELECT * FROM orders WHERE id = $1', [newId])
     sendJson(res, success(newOrder[0]))
   } catch (err) {
     console.error(err)

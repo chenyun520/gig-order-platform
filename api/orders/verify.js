@@ -10,11 +10,11 @@ export default async function handler(req, res) {
     if (!phone) {
       return sendJson(res, fail('Phone number is required'))
     }
-    const [rows] = await pool.query(
+    const { rows } = await pool.query(
       `SELECT o.order_no, o.status, o.created_at, o.quoted_price, s.title as service_title
        FROM orders o
        JOIN services s ON o.service_id = s.id
-       WHERE o.contact_phone = ?
+       WHERE o.contact_phone = $1
        ORDER BY o.created_at DESC`,
       [phone]
     )

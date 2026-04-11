@@ -10,19 +10,19 @@ export default async function handler(req, res) {
     if (!id || !phone) {
       return sendJson(res, fail('Order ID and phone number are required'))
     }
-    const [rows] = await pool.query(
+    const { rows } = await pool.query(
       `SELECT o.*, s.title as service_title, s.description as service_desc, s.price_type, s.unit
        FROM orders o
        JOIN services s ON o.service_id = s.id
-       WHERE o.id = ? AND o.contact_phone = ?`,
+       WHERE o.id = $1 AND o.contact_phone = $2`,
       [id, phone]
     )
     if (rows.length === 0) {
       return sendJson(res, fail('Order not found', -1, 404))
     }
     // Get logs
-    const [logs] = await pool.query(
-      'SELECT * FROM order_logs WHERE order_id = ? ORDER BY created_at ASC',
+    const { rows: logs } = await pool.query(
+      'SELECT * FROM order_logs WHERE order_id = $1 ORDER BY created_at ASC',
       [id]
     )
     sendJson(res, success({ ...rows[0], logs }))

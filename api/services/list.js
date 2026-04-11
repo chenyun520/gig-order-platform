@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     return sendJson(res, fail('Method not allowed', -1, 405))
   }
   try {
-    const [rows] = await pool.query(
+    const { rows } = await pool.query(
       'SELECT id, title, description, price_type, price, unit, icon, sort_order FROM services WHERE is_active = TRUE ORDER BY sort_order ASC'
     )
     sendJson(res, success(rows))

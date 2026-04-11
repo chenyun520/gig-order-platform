@@ -1,3 +1,20 @@
+# Supabase 数据库初始化指南
+
+## 操作步骤
+
+1. 打开 SQL 编辑器：https://supabase.com/dashboard/project/pwccxvmtcaaxxzajjbrp/sql/new
+
+2. 删除编辑器中的默认内容，粘贴下面的 SQL
+
+3. 点击右下角 **Run** 按钮（或按 `Ctrl + Enter`）
+
+4. 看到 "Success" 即为成功
+
+---
+
+## 初始化 SQL
+
+```sql
 -- Supabase PostgreSQL initialization
 
 CREATE TABLE IF NOT EXISTS admins (
@@ -76,3 +93,9 @@ INSERT INTO services (title, description, price_type, price, unit, icon, sort_or
 ('数据处理', 'Excel数据处理、数据可视化、报表生成', 'mixed', 100.00, '次', 'data', 4),
 ('文档排版', '论文排版、文档美化、格式转换', 'fixed', 20.00, '页', 'doc', 5)
 ON CONFLICT DO NOTHING;
+```
+
+## 初始化后的数据
+
+- 管理员账号：`admin` / `admin123`
+- 5 个示例服务：PPT制作、网页开发、海报设计、数据处理、文档排版

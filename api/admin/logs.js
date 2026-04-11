@@ -12,13 +12,15 @@ export default async function handler(req, res) {
       const offset = (parseInt(page) - 1) * parseInt(limit)
       let where = ''
       const params = []
+      let paramIdx = 1
       if (order_id) {
-        where = 'WHERE order_id = ?'
+        where = `WHERE order_id = $${paramIdx}`
         params.push(order_id)
+        paramIdx++
       }
 
-      const [rows] = await pool.query(
-        `SELECT * FROM order_logs ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      const { rows } = await pool.query(
+        `SELECT * FROM order_logs ${where} ORDER BY created_at DESC LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
         [...params, parseInt(limit), offset]
       )
       return sendJson(res, success(rows))

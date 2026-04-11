@@ -7,8 +7,8 @@ export default async function handler(req, res) {
   }
   try {
     const { id } = req.query
-    const [rows] = await pool.query(
-      'SELECT * FROM services WHERE id = ? AND is_active = TRUE',
+    const { rows } = await pool.query(
+      'SELECT * FROM services WHERE id = $1 AND is_active = TRUE',
       [id]
     )
     if (rows.length === 0) {

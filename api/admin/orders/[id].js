@@ -21,43 +21,47 @@ export default async function handler(req, res) {
       const { status, quoted_price, remark } = req.body
 
       // Get current order
-      const [existing] = await pool.query('SELECT * FROM orders WHERE id = ?', [id])
+      const { rows: existing } = await pool.query('SELECT * FROM orders WHERE id = $1', [id])
       if (existing.length === 0) return sendJson(res, fail('Order not found', -1, 404))
 
       const updates = []
       const params = []
+      let paramIdx = 1
 
       if (status) {
-        updates.push('status = ?')
+        updates.push(`status = $${paramIdx}`)
         params.push(status)
+        paramIdx++
         // Auto-set timestamp
         if (STATUS_TIMESTAMPS[status]) {
           updates.push(`${STATUS_TIMESTAMPS[status]} = NOW()`)
         }
       }
       if (quoted_price !== undefined) {
-        updates.push('quoted_price = ?')
+        updates.push(`quoted_price = $${paramIdx}`)
         params.push(quoted_price)
+        paramIdx++
       }
       if (remark !== undefined) {
-        updates.push('remark = ?')
+        updates.push(`remark = $${paramIdx}`)
         params.push(remark)
+        paramIdx++
       }
 
       if (updates.length === 0) return sendJson(res, fail('No fields to update'))
 
       params.push(id)
-      await pool.query(`UPDATE orders SET ${updates.join(', ')} WHERE id = ?`, params)
+      await pool.query(`UPDATE orders SET ${updates.join(', ')} WHERE id = $${paramIdx}`, params)
 
       // Log
       const action = status || 'updated'
       const note = remark || (quoted_price !== undefined ? `报价: ¥${quoted_price}` : '状态更新')
       await pool.query(
-        'INSERT INTO order_logs (order_id, action, note) VALUES (?, ?, ?)',
+        'INSERT INTO order_logs (order_id, action, note) VALUES ($1, $2, $3)',
         [id, action, note]
       )
 
-      const [updated] = await pool.query('SELECT * FROM orders WHERE id = ?', [id])
+      const { rows: updated } = await pool.query('SELECT * FROM orders WHERE id = $1', [id])
       return sendJson(res, success(updated[0]))
     }
 

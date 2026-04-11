@@ -12,22 +12,24 @@ export default async function handler(req, res) {
       const offset = (parseInt(page) - 1) * parseInt(limit)
       let where = ''
       const params = []
+      let paramIdx = 1
       if (status) {
-        where = 'WHERE o.status = ?'
+        where = `WHERE o.status = $${paramIdx}`
         params.push(status)
+        paramIdx++
       }
 
-      const [rows] = await pool.query(
+      const { rows } = await pool.query(
         `SELECT o.*, s.title as service_title
          FROM orders o
          JOIN services s ON o.service_id = s.id
          ${where}
          ORDER BY o.created_at DESC
-         LIMIT ? OFFSET ?`,
+         LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
         [...params, parseInt(limit), offset]
       )
 
-      const [countResult] = await pool.query(
+      const { rows: countResult } = await pool.query(
         `SELECT COUNT(*) as total FROM orders o ${where}`,
         params
       )
