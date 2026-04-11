@@ -75,19 +75,21 @@
         <div class="modal__section" v-if="actionOrder.attachment_urls && actionOrder.attachment_urls.length > 0">
           <label class="field__label">客户附件</label>
           <div class="modal__file-list">
-            <span v-for="f in actionOrder.attachment_urls" :key="f.path" class="modal__file-tag">
+            <a v-for="f in actionOrder.attachment_urls" :key="f.path"
+              :href="getPublicUrl(f.path)" target="_blank" class="modal__file-link">
               {{ f.name }}
-            </span>
+            </a>
           </div>
         </div>
 
         <!-- Deliverables -->
-        <div class="modal__section" v-if="['in_progress', 'delivered'].includes(actionOrder.status)">
+        <div class="modal__section">
           <label class="field__label">交付文件</label>
           <div class="modal__file-list" v-if="actionOrder.deliverable_urls && actionOrder.deliverable_urls.length > 0">
-            <span v-for="f in actionOrder.deliverable_urls" :key="f.path" class="modal__file-tag">
+            <a v-for="f in actionOrder.deliverable_urls" :key="f.path"
+              :href="getPublicUrl(f.path)" target="_blank" class="modal__file-link">
               {{ f.name }}
-            </span>
+            </a>
           </div>
           <label class="modal__upload-btn">
             <input type="file" multiple @change="onDeliverableSelect" style="display:none" />
@@ -127,6 +129,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import adminApi from '../../api/admin'
+
+const SUPABASE_URL = 'https://pwccxvmtcaaxxzajjbrp.supabase.co'
+
+function getPublicUrl(path) {
+  return `${SUPABASE_URL}/storage/v1/object/public/order-files/${path}`
+}
 
 const orders = ref([])
 const filter = ref('')
@@ -332,6 +340,21 @@ onMounted(fetchOrders)
   padding: 4px 10px;
   background: var(--color-gray-100);
   border-radius: var(--radius-pill);
+}
+
+.modal__file-link {
+  display: inline-block;
+  font-size: 0.8125rem;
+  padding: 6px 12px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-pill);
+  color: var(--color-black);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.modal__file-link:hover {
+  background: var(--color-gray-200);
 }
 
 .modal__upload-btn {

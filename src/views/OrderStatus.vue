@@ -34,7 +34,7 @@
         <h3 class="status__section-title">我的附件</h3>
         <div class="status__file-list">
           <a v-for="f in order.attachment_urls" :key="f.path"
-            :href="'/api/files?path=' + encodeURIComponent(f.path) + '&phone=' + route.query.phone + '&order_no=' + order.order_no"
+            :href="getPublicUrl(f.path)"
             target="_blank" class="status__file-link">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             {{ f.name }}
@@ -47,7 +47,7 @@
         <h3 class="status__section-title">交付文件</h3>
         <div class="status__file-list">
           <a v-for="f in order.deliverable_urls" :key="f.path"
-            :href="'/api/files?path=' + encodeURIComponent(f.path) + '&phone=' + route.query.phone + '&order_no=' + order.order_no"
+            :href="getPublicUrl(f.path)"
             target="_blank" class="status__file-link">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             {{ f.name }}
@@ -95,6 +95,12 @@ import { useRoute } from 'vue-router'
 import orderApi from '../api/orders'
 import OrderTimeline from '../components/OrderTimeline.vue'
 import { useToast } from '../composables/useToast'
+
+const SUPABASE_URL = 'https://pwccxvmtcaaxxzajjbrp.supabase.co'
+
+function getPublicUrl(path) {
+  return `${SUPABASE_URL}/storage/v1/object/public/order-files/${path}`
+}
 
 const route = useRoute()
 const toast = useToast()

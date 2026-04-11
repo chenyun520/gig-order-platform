@@ -153,14 +153,14 @@ async function handleDownload(req, res) {
     if (!order) return sendJson(res, fail('Access denied', -1, 403))
   }
 
-  // Generate a signed download URL (valid 60s) and redirect
-  const { data, error } = await supabase.storage
+  // Bucket is public, use public URL
+  const { data } = supabase.storage
     .from('order-files')
-    .createSignedUrl(filePath, 60)
+    .getPublicUrl(filePath)
 
-  if (error || !data?.signedUrl) {
+  if (!data?.publicUrl) {
     return sendJson(res, fail('File not found', -1, 404))
   }
 
-  res.redirect(data.signedUrl)
+  res.redirect(data.publicUrl)
 }
