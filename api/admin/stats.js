@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       supabase.from('orders').select('*', { count: 'exact', head: true }).in('status', ['confirmed', 'in_progress']),
       supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'completed'),
       supabase.from('orders').select('quoted_price').in('status', ['completed', 'delivered']),
-      supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('orders').select('*', { count: 'exact', head: true }).in('status', ['pending', 'quoted']),
     ])
 
     const totalRevenue = (allOrders.data || []).reduce((sum, o) => sum + (parseFloat(o.quoted_price) || 0), 0)

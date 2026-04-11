@@ -26,9 +26,10 @@ const props = defineProps({
   order: { type: Object, required: true },
 })
 
-const statusFlow = ['pending', 'paid', 'confirmed', 'in_progress', 'delivered', 'completed']
+const statusFlow = ['pending', 'quoted', 'paid', 'confirmed', 'in_progress', 'delivered', 'completed']
 const statusLabels = {
-  pending: '待付款',
+  pending: '待处理',
+  quoted: '已报价',
   paid: '已付款',
   confirmed: '已确认',
   in_progress: '进行中',
@@ -41,18 +42,24 @@ const steps = computed(() => {
   const currentIdx = statusFlow.indexOf(props.order.status)
   const isRejected = props.order.status === 'rejected'
 
-  return statusFlow.map((key, i) => {
-    const timeField = `${key}_at`
-    return {
-      key,
-      label: statusLabels[key],
-      done: !isRejected && i < currentIdx,
-      active: !isRejected && i === currentIdx,
-      time: props.order[timeField]
-        ? new Date(props.order[timeField]).toLocaleString('zh-CN')
-        : null,
-    }
-  })
+  return statusFlow
+    .filter(key => {
+      // Hide quoted step if order was never quoted (went straight to paid)
+      if (key === 'quoted' && props.order.status !== 'quoted' && !props.order.quoted_at) return false
+      return true
+    })
+    .map((key, i) => {
+      const timeField = key === 'quoted' ? 'quoted_at' : `${key}_at`
+      return {
+        key,
+        label: statusLabels[key],
+        done: !isRejected && i < currentIdx,
+        active: !isRejected && i === currentIdx,
+        time: props.order[timeField]
+          ? new Date(props.order[timeField]).toLocaleString('zh-CN')
+          : null,
+      }
+    })
 })
 </script>
 

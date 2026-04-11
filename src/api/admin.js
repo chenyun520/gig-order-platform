@@ -22,6 +22,19 @@ export default {
   updateOrder(id, data) {
     return http.patch(`/api/admin/orders/${id}`, data).then(r => r.data)
   },
+  deleteOrder(id) {
+    return http.delete(`/api/admin/orders/${id}`).then(r => r.data)
+  },
+  uploadDeliverable(orderId, file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('order_id', orderId)
+    formData.append('type', 'deliverables')
+    return http.post('/api/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 30000,
+    }).then(r => r.data)
+  },
   getLogs(params) {
     return http.get('/api/admin/logs', { params }).then(r => r.data)
   },

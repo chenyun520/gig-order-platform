@@ -29,7 +29,33 @@
         </div>
       </div>
 
-      <!-- 报价待付款：显示收款码 -->
+      <!-- Client attachments -->
+      <div class="status__files-section" v-if="order.attachment_urls && order.attachment_urls.length > 0">
+        <h3 class="status__section-title">我的附件</h3>
+        <div class="status__file-list">
+          <a v-for="f in order.attachment_urls" :key="f.path"
+            :href="'/api/files/' + f.path + '?phone=' + route.query.phone + '&order_no=' + order.order_no"
+            target="_blank" class="status__file-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {{ f.name }}
+          </a>
+        </div>
+      </div>
+
+      <!-- Deliverables from admin -->
+      <div class="status__files-section status__files-section--highlight" v-if="order.deliverable_urls && order.deliverable_urls.length > 0">
+        <h3 class="status__section-title">交付文件</h3>
+        <div class="status__file-list">
+          <a v-for="f in order.deliverable_urls" :key="f.path"
+            :href="'/api/files/' + f.path + '?phone=' + route.query.phone + '&order_no=' + order.order_no"
+            target="_blank" class="status__file-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {{ f.name }}
+          </a>
+        </div>
+      </div>
+
+      <!-- Payment section: show when quoted/pending with a price -->
       <div class="status__pay" v-if="showPayment">
         <div class="status__pay-amount" v-if="order.quoted_price">
           应付金额：<strong>¥{{ order.quoted_price }}</strong>
@@ -71,11 +97,11 @@ const toast = useToast()
 const order = ref(null)
 
 const statusLabels = {
-  pending: '待付款', paid: '已付款', confirmed: '已确认',
+  pending: '待处理', quoted: '已报价', paid: '已付款', confirmed: '已确认',
   in_progress: '进行中', delivered: '已交付', completed: '已完成', rejected: '已拒绝',
 }
 const statusColors = {
-  pending: 'var(--color-pending)', paid: 'var(--color-paid)', confirmed: 'var(--color-confirmed)',
+  pending: 'var(--color-pending)', quoted: '#f97316', paid: 'var(--color-paid)', confirmed: 'var(--color-confirmed)',
   in_progress: 'var(--color-progress)', delivered: 'var(--color-delivered)',
   completed: 'var(--color-completed)', rejected: 'var(--color-rejected)',
 }
@@ -83,9 +109,8 @@ const statusColors = {
 const statusLabel = computed(() => statusLabels[order.value?.status] || '')
 const statusColor = computed(() => statusColors[order.value?.status] || '#000')
 
-// 显示付款区域：待付款 + 有报价
 const showPayment = computed(() => {
-  return order.value?.status === 'pending' && order.value?.quoted_price
+  return ['pending', 'quoted'].includes(order.value?.status) && order.value?.quoted_price
 })
 
 function formatDate(d) {
@@ -184,6 +209,45 @@ onMounted(async () => {
 .status__price {
   font-weight: 700;
   font-size: 1.125rem;
+}
+
+/* Files sections */
+.status__files-section {
+  margin-bottom: var(--space-5);
+}
+
+.status__files-section--highlight {
+  background: #ecfdf5;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.status__file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.status__file-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 12px;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--color-black);
+  font-size: 0.875rem;
+  transition: background 0.15s;
+}
+
+.status__file-link:hover {
+  background: var(--color-gray-100);
+}
+
+.status__file-link svg {
+  flex-shrink: 0;
+  color: var(--color-gray-400);
 }
 
 /* Payment section */

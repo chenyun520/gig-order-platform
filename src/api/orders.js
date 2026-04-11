@@ -10,4 +10,15 @@ export default {
   verify(phone) {
     return http.post('/api/orders/verify', { phone }).then(r => r.data)
   },
+  uploadAttachment(orderNo, phone, file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('order_no', orderNo)
+    formData.append('phone', phone)
+    formData.append('type', 'attachments')
+    return http.post('/api/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 30000,
+    }).then(r => r.data)
+  },
 }

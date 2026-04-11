@@ -17,8 +17,35 @@ export default async function handler(req, res) {
   try {
     const { id } = req.query
 
+    if (req.method === 'DELETE') {
+      // Get order files before deletion
+      const { data: order } = await supabase
+        .from('orders')
+        .select('attachment_urls, deliverable_urls, order_no')
+        .eq('id', id)
+        .single()
+      if (!order) return sendJson(res, fail('Order not found', -1, 404))
+
+      // Delete files from storage
+      const allFiles = [
+        ...(order.attachment_urls || []),
+        ...(order.deliverable_urls || []),
+      ]
+      if (allFiles.length > 0) {
+        const paths = allFiles.map(f => f.path).filter(Boolean)
+        if (paths.length > 0) {
+          await supabase.storage.from('order-files').remove(paths)
+        }
+      }
+
+      // Delete order (cascade handles order_logs)
+      const { error } = await supabase.from('orders').delete().eq('id', id)
+      if (error) throw error
+      return sendJson(res, success({ deleted: true, order_no: order.order_no }))
+    }
+
     if (req.method === 'PATCH') {
-      const { status, quoted_price, remark } = req.body
+      const { status, quoted_price, remark, deliverable_urls } = req.body
 
       // Get current order
       const { data: existing, error: fetchErr } = await supabase
@@ -35,8 +62,16 @@ export default async function handler(req, res) {
           updates[STATUS_TIMESTAMPS[status]] = new Date().toISOString()
         }
       }
-      if (quoted_price !== undefined) updates.quoted_price = quoted_price
+      if (quoted_price !== undefined) {
+        updates.quoted_price = quoted_price
+        updates.quoted_at = new Date().toISOString()
+        // Auto set status to quoted if currently pending and no status change
+        if (!status && existing.status === 'pending') {
+          updates.status = 'quoted'
+        }
+      }
       if (remark !== undefined) updates.remark = remark
+      if (deliverable_urls !== undefined) updates.deliverable_urls = deliverable_urls
 
       if (Object.keys(updates).length === 0) return sendJson(res, fail('No fields to update'))
 
@@ -47,8 +82,10 @@ export default async function handler(req, res) {
       if (updateErr) throw updateErr
 
       // Log
-      const action = status || 'updated'
-      const note = remark || (quoted_price !== undefined ? `报价: ¥${quoted_price}` : '状态更新')
+      const action = status || (quoted_price !== undefined ? 'quote_set' : 'updated')
+      let note = remark
+      if (!note && quoted_price !== undefined) note = `报价: ¥${quoted_price}`
+      if (!note) note = '状态更新'
       await supabase
         .from('order_logs')
         .insert({ order_id: id, action, note })

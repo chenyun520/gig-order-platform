@@ -5,7 +5,8 @@
       <div class="manage__filters">
         <select v-model="filter" class="field__input" style="width:auto" @change="fetchOrders">
           <option value="">全部状态</option>
-          <option value="pending">待付款</option>
+          <option value="pending">待处理</option>
+          <option value="quoted">已报价</option>
           <option value="paid">已付款</option>
           <option value="confirmed">已确认</option>
           <option value="in_progress">进行中</option>
@@ -61,12 +62,41 @@
     <!-- Action Modal -->
     <div v-if="actionOrder" class="modal-overlay" @click.self="actionOrder = null">
       <div class="card modal">
-        <h3 style="margin-bottom: var(--space-3)">订单 {{ actionOrder.order_no }}</h3>
-        <p style="font-size: 0.875rem; color: var(--color-gray-500); margin-bottom: var(--space-4)">
-          {{ actionOrder.service_title }} — {{ actionOrder.contact_name }}
-        </p>
+        <div class="modal__header">
+          <h3>订单 {{ actionOrder.order_no }}</h3>
+          <span class="order-status" :style="{ background: statusColors[actionOrder.status], color: '#fff' }">
+            {{ statusLabels[actionOrder.status] }}
+          </span>
+        </div>
+        <p class="modal__info">{{ actionOrder.service_title }} — {{ actionOrder.contact_name }} ({{ actionOrder.contact_phone }})</p>
+        <p class="modal__desc" v-if="actionOrder.requirement_desc">{{ actionOrder.requirement_desc }}</p>
 
-        <div class="field" v-if="actionOrder.status === 'pending' || actionOrder.status === 'paid'">
+        <!-- Client attachments -->
+        <div class="modal__section" v-if="actionOrder.attachment_urls && actionOrder.attachment_urls.length > 0">
+          <label class="field__label">客户附件</label>
+          <div class="modal__file-list">
+            <span v-for="f in actionOrder.attachment_urls" :key="f.path" class="modal__file-tag">
+              {{ f.name }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Deliverables -->
+        <div class="modal__section" v-if="['in_progress', 'delivered'].includes(actionOrder.status)">
+          <label class="field__label">交付文件</label>
+          <div class="modal__file-list" v-if="actionOrder.deliverable_urls && actionOrder.deliverable_urls.length > 0">
+            <span v-for="f in actionOrder.deliverable_urls" :key="f.path" class="modal__file-tag">
+              {{ f.name }}
+            </span>
+          </div>
+          <label class="modal__upload-btn">
+            <input type="file" multiple @change="onDeliverableSelect" style="display:none" />
+            <span>+ 上传交付物</span>
+          </label>
+        </div>
+
+        <!-- Quote input -->
+        <div class="field" v-if="['pending', 'quoted'].includes(actionOrder.status)">
           <label class="field__label">报价金额</label>
           <input v-model.number="actionPrice" class="field__input" type="number" step="0.01" placeholder="输入报价" />
         </div>
@@ -79,13 +109,14 @@
         <div class="modal__actions">
           <button
             v-for="act in getActions(actionOrder.status)"
-            :key="act.status"
+            :key="act.label"
             class="btn btn-sm"
             :class="act.btnClass"
-            @click="updateStatus(actionOrder, act.status)"
+            @click="handleAction(actionOrder, act)"
           >
             {{ act.label }}
           </button>
+          <button class="btn btn-sm btn-delete" @click="deleteOrder(actionOrder)">删除订单</button>
           <button class="btn btn-outline btn-sm" @click="actionOrder = null">关闭</button>
         </div>
       </div>
@@ -104,26 +135,32 @@ const actionPrice = ref(null)
 const actionRemark = ref('')
 
 const statusLabels = {
-  pending: '待付款', paid: '已付款', confirmed: '已确认',
+  pending: '待处理', quoted: '已报价', paid: '已付款', confirmed: '已确认',
   in_progress: '进行中', delivered: '已交付', completed: '已完成', rejected: '已拒绝',
 }
 const statusColors = {
-  pending: 'var(--color-pending)', paid: 'var(--color-paid)', confirmed: 'var(--color-confirmed)',
+  pending: 'var(--color-pending)', quoted: '#f97316', paid: 'var(--color-paid)', confirmed: 'var(--color-confirmed)',
   in_progress: 'var(--color-progress)', delivered: 'var(--color-delivered)',
   completed: 'var(--color-completed)', rejected: 'var(--color-rejected)',
 }
 
 function getActions(status) {
   const map = {
-    pending: [{ status: 'paid', label: '确认付款', btnClass: 'btn-primary' }],
-    paid: [{ status: 'confirmed', label: '确认收款', btnClass: 'btn-primary' }],
-    confirmed: [{ status: 'in_progress', label: '开始处理', btnClass: 'btn-primary' }],
-    in_progress: [{ status: 'delivered', label: '标记交付', btnClass: 'btn-primary' }],
-    delivered: [{ status: 'completed', label: '标记完成', btnClass: 'btn-primary' }],
+    pending: [
+      { label: '设置报价', btnClass: 'btn-primary', action: 'quote' },
+      { label: '确认已付款', btnClass: 'btn-outline', action: 'paid' },
+    ],
+    quoted: [
+      { label: '确认已付款', btnClass: 'btn-primary', action: 'paid' },
+    ],
+    paid: [{ label: '确认收款', btnClass: 'btn-primary', action: 'confirmed' }],
+    confirmed: [{ label: '开始处理', btnClass: 'btn-primary', action: 'in_progress' }],
+    in_progress: [{ label: '标记交付', btnClass: 'btn-primary', action: 'delivered' }],
+    delivered: [{ label: '标记完成', btnClass: 'btn-primary', action: 'completed' }],
   }
   const actions = map[status] || []
-  if (['pending', 'paid'].includes(status)) {
-    actions.push({ status: 'rejected', label: '拒绝', btnClass: 'btn-outline' })
+  if (['pending', 'quoted', 'paid'].includes(status)) {
+    actions.push({ label: '拒绝', btnClass: 'btn-outline', action: 'rejected' })
   }
   return actions
 }
@@ -133,7 +170,7 @@ function formatDate(d) {
 }
 
 function openAction(o) {
-  actionOrder.value = o
+  actionOrder.value = { ...o }
   actionPrice.value = o.quoted_price
   actionRemark.value = ''
 }
@@ -145,15 +182,46 @@ async function fetchOrders() {
   } catch (e) { console.error(e) }
 }
 
-async function updateStatus(order, status) {
+async function handleAction(order, act) {
   try {
-    const data = { status }
-    if (actionPrice.value) data.quoted_price = actionPrice.value
+    const data = {}
+    if (act.action === 'quote') {
+      // Quote only: set price without status change (backend auto-sets quoted)
+      if (!actionPrice.value) { alert('请输入报价金额'); return }
+      data.quoted_price = actionPrice.value
+    } else {
+      data.status = act.action
+      if (actionPrice.value) data.quoted_price = actionPrice.value
+    }
     if (actionRemark.value) data.remark = actionRemark.value
     await adminApi.updateOrder(order.id, data)
     actionOrder.value = null
     await fetchOrders()
   } catch (e) { alert('操作失败') }
+}
+
+async function deleteOrder(order) {
+  if (!confirm(`确定删除订单 ${order.order_no}？此操作不可恢复。`)) return
+  try {
+    await adminApi.deleteOrder(order.id)
+    actionOrder.value = null
+    await fetchOrders()
+  } catch (e) { alert('删除失败') }
+}
+
+async function onDeliverableSelect(e) {
+  const files = Array.from(e.target.files)
+  for (const file of files) {
+    if (file.size > 4 * 1024 * 1024) { alert(`${file.name} 超过4MB`); continue }
+    try {
+      await adminApi.uploadDeliverable(actionOrder.value.id, file)
+    } catch (err) { alert(`${file.name} 上传失败`) }
+  }
+  e.target.value = ''
+  await fetchOrders()
+  // Refresh the modal data
+  const updated = orders.value.find(o => o.id === actionOrder.value.id)
+  if (updated) actionOrder.value = { ...updated }
 }
 
 onMounted(fetchOrders)
@@ -220,8 +288,65 @@ onMounted(fetchOrders)
 
 .modal {
   padding: var(--space-6);
-  max-width: 480px;
+  max-width: 520px;
   width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.modal__info {
+  font-size: 0.875rem;
+  color: var(--color-gray-500);
+  margin-bottom: var(--space-3);
+}
+
+.modal__desc {
+  font-size: 0.875rem;
+  background: var(--color-gray-100);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  line-height: 1.5;
+}
+
+.modal__section {
+  margin-bottom: var(--space-4);
+}
+
+.modal__file-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.modal__file-tag {
+  font-size: 0.8125rem;
+  padding: 4px 10px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-pill);
+}
+
+.modal__upload-btn {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px dashed var(--color-gray-300);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  color: var(--color-gray-500);
+}
+
+.modal__upload-btn:hover {
+  border-color: var(--color-black);
+  color: var(--color-black);
 }
 
 .modal__actions {
@@ -229,6 +354,14 @@ onMounted(fetchOrders)
   flex-wrap: wrap;
   gap: var(--space-2);
   margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.btn-delete {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
 }
 
 .field__label {

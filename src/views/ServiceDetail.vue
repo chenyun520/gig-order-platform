@@ -50,11 +50,23 @@ onMounted(async () => {
   }
 })
 
-async function handleOrder(formData, mode) {
+async function handleOrder(formData, mode, files = []) {
   try {
     orderMode.value = mode
     const res = await orderApi.create(formData)
-    ordered.value = res.data
+    if (res.code === 0) {
+      ordered.value = res.data
+      // Upload attachments after order creation
+      if (files.length > 0) {
+        for (const file of files) {
+          try {
+            await orderApi.uploadAttachment(res.data.order_no, formData.contact_phone, file)
+          } catch (e) {
+            console.error('File upload failed:', e)
+          }
+        }
+      }
+    }
   } catch (e) {
     alert('下单失败，请稍后重试')
   }
