@@ -23,21 +23,26 @@ export default {
 
     if (signRes.code !== 0) throw new Error(signRes.message)
 
-    // Phase 2: upload directly to Supabase
-    await fetch(signRes.data.signedUrl, {
+    // Phase 2: upload directly to Supabase Storage
+    const uploadRes = await fetch(signRes.data.signedUrl, {
       method: 'PUT',
       headers: { 'Content-Type': file.type || 'application/octet-stream' },
       body: file,
     })
+    if (!uploadRes.ok) {
+      throw new Error(`Upload failed: ${uploadRes.status}`)
+    }
 
-    // Phase 3: confirm
+    // Phase 3: confirm — save file info to order
     const fileInfo = { name: file.name, path: signRes.data.path, size: file.size }
-    await http.post('/api/files', {
+    const confirmRes = await http.post('/api/files', {
       action: 'confirm',
       order_no: orderNo,
       phone,
       type: 'attachments',
       file_info: fileInfo,
     }).then(r => r.data)
+
+    if (confirmRes.code !== 0) throw new Error(confirmRes.message)
   },
 }

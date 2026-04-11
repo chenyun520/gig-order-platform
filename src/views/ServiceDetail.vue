@@ -16,6 +16,7 @@
       <div class="detail__side">
         <template v-if="!ordered">
           <OrderForm :service="service" @submitted="handleOrder" />
+          <div v-if="uploading" class="upload-status">附件上传中...</div>
         </template>
         <template v-else>
           <QrPayment :order="ordered" :mode="orderMode" />
@@ -40,6 +41,7 @@ const route = useRoute()
 const service = ref(null)
 const ordered = ref(null)
 const orderMode = ref('pay')
+const uploading = ref(false)
 
 onMounted(async () => {
   try {
@@ -55,17 +57,20 @@ async function handleOrder(formData, mode, files = []) {
     orderMode.value = mode
     const res = await orderApi.create(formData)
     if (res.code === 0) {
-      ordered.value = res.data
-      // Upload attachments after order creation
+      // Upload attachments before showing payment page
       if (files.length > 0) {
+        uploading.value = true
         for (const file of files) {
           try {
             await orderApi.uploadAttachment(res.data.order_no, formData.contact_phone, file)
           } catch (e) {
             console.error('File upload failed:', e)
+            alert(`附件 ${file.name} 上传失败，订单已创建成功`)
           }
         }
+        uploading.value = false
       }
+      ordered.value = res.data
     }
   } catch (e) {
     alert('下单失败，请稍后重试')
