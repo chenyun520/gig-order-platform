@@ -72,14 +72,15 @@
         <p class="modal__desc" v-if="actionOrder.requirement_desc">{{ actionOrder.requirement_desc }}</p>
 
         <!-- Client attachments -->
-        <div class="modal__section" v-if="actionOrder.attachment_urls && actionOrder.attachment_urls.length > 0">
+        <div class="modal__section">
           <label class="field__label">客户附件</label>
-          <div class="modal__file-list">
+          <div class="modal__file-list" v-if="actionOrder.attachment_urls && actionOrder.attachment_urls.length > 0">
             <a v-for="f in actionOrder.attachment_urls" :key="f.path"
               :href="getPublicUrl(f.path)" target="_blank" class="modal__file-link">
               {{ f.name }}
             </a>
           </div>
+          <p v-else class="modal__empty">暂无附件</p>
         </div>
 
         <!-- Deliverables -->
@@ -91,6 +92,7 @@
               {{ f.name }}
             </a>
           </div>
+          <p v-else class="modal__empty">暂无交付</p>
           <label class="modal__upload-btn">
             <input type="file" multiple @change="onDeliverableSelect" style="display:none" />
             <span>+ 上传交付物</span>
@@ -355,6 +357,12 @@ onMounted(fetchOrders)
 
 .modal__file-link:hover {
   background: var(--color-gray-200);
+}
+
+.modal__empty {
+  font-size: 0.8125rem;
+  color: var(--color-gray-400);
+  margin: 0;
 }
 
 .modal__upload-btn {
