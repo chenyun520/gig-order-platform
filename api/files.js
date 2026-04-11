@@ -66,10 +66,11 @@ async function signUpload(req, res) {
   if (!resolvedOrderId) return sendJson(res, fail('order_id required'))
   if (!filename) return sendJson(res, fail('filename required'))
 
-  // Build storage path
-  const safeName = filename.replace(/[^a-zA-Z0-9._\-\u4e00-\u9fff]/g, '_')
+  // Build storage path (ASCII only to avoid URL encoding issues)
+  const ext = filename.includes('.') ? '.' + filename.split('.').pop() : ''
+  const safeName = Date.now() + ext
   const folder = type === 'deliverables' ? 'deliverables' : 'attachments'
-  const storagePath = `${resolvedOrderId}/${folder}/${Date.now()}_${safeName}`
+  const storagePath = `${resolvedOrderId}/${folder}/${safeName}`
 
   // Create signed upload URL
   const { data, error } = await supabase.storage
