@@ -1,5 +1,6 @@
 import { supabase } from '../_lib/supabase.js'
 import { success, fail, sendJson } from '../_lib/response.js'
+import { sendOrderEmail } from '../_lib/email.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -35,6 +36,10 @@ export default async function handler(req, res) {
     await supabase
       .from('order_logs')
       .insert({ order_id: order.id, action: 'created', note: '订单创建' })
+
+    // Send email notification (don't block the response)
+    const { data: svc } = await supabase.from('services').select('title').eq('id', service_id).single()
+    sendOrderEmail(order, svc?.title || '').catch(err => console.error('Email error:', err))
 
     sendJson(res, success(order))
   } catch (err) {
