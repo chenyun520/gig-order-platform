@@ -26,35 +26,16 @@ export default {
     return http.delete(`/api/admin/orders/${id}`).then(r => r.data)
   },
   async uploadDeliverable(orderId, file) {
-    // Phase 1: get signed upload URL
-    const signRes = await http.post('/api/files', {
-      action: 'sign',
+    // Read file as base64 and send as JSON
+    const fileB64 = await readFileAsBase64(file)
+    const res = await http.post('/api/files', {
       order_id: orderId,
       type: 'deliverables',
       filename: file.name,
-      size: file.size,
+      file_b64: fileB64,
     }).then(r => r.data)
 
-    if (signRes.code !== 0) throw new Error(signRes.message)
-
-    // Phase 2: upload directly to Supabase Storage
-    const uploadRes = await fetch(signRes.data.signedUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type || 'application/octet-stream' },
-      body: file,
-    })
-    if (!uploadRes.ok) {
-      throw new Error(`Upload failed: ${uploadRes.status}`)
-    }
-
-    // Phase 3: confirm
-    const fileInfo = { name: file.name, path: signRes.data.path, size: file.size }
-    await http.post('/api/files', {
-      action: 'confirm',
-      order_id: orderId,
-      type: 'deliverables',
-      file_info: fileInfo,
-    }).then(r => r.data)
+    if (res.code !== 0) throw new Error(res.message)
   },
   getLogs(params) {
     return http.get('/api/admin/logs', { params }).then(r => r.data)
@@ -62,4 +43,13 @@ export default {
   getStats() {
     return http.get('/api/admin/stats').then(r => r.data)
   },
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(new Error('Failed to read file'))
+    reader.readAsDataURL(file)
+  })
 }

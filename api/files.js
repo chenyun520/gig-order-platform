@@ -2,13 +2,21 @@ import { supabase } from './_lib/supabase.js'
 import { success, fail, sendJson } from './_lib/response.js'
 import { authMiddleware } from './_lib/auth.js'
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+  },
+}
+
 export default async function handler(req, res) {
   try {
+    if (req.method === 'POST') {
+      return await handleUpload(req, res)
+    }
     if (req.method === 'GET') {
       return await handleDownload(req, res)
-    }
-    if (req.method === 'POST') {
-      return await handleUploadAction(req, res)
     }
     return sendJson(res, fail('Method not allowed', -1, 405))
   } catch (err) {
@@ -17,39 +25,20 @@ export default async function handler(req, res) {
   }
 }
 
-/**
- * POST /api/files — two-phase upload
- * Phase 1: { action: 'sign', order_id, order_no?, phone?, type, filename, size }
- *   → returns { upload_url, path }
- * Phase 2: { action: 'confirm', order_id, order_no?, phone?, type, file_info: { name, path, size } }
- *   → updates order's attachment_urls or deliverable_urls
- */
-async function handleUploadAction(req, res) {
-  const { action } = req.body || {}
+async function handleUpload(req, res) {
+  const { order_id, order_no, phone, type, filename, file_b64 } = req.body || {}
 
-  if (!action) {
-    return sendJson(res, fail('Missing action field. body=' + JSON.stringify(req.body)))
+  if (!filename || !file_b64) {
+    return sendJson(res, fail('filename and file_b64 required'))
   }
 
-  if (action === 'sign') {
-    return await signUpload(req, res)
-  }
-  if (action === 'confirm') {
-    return await confirmUpload(req, res)
-  }
-  return sendJson(res, fail('Invalid action, use "sign" or "confirm"'))
-}
-
-async function signUpload(req, res) {
-  const { order_id, order_no, phone, type, filename, size } = req.body
-
+  // Auth: admin via JWT, client via order_no + phone
   const admin = authMiddleware(req)
   let resolvedOrderId = order_id
 
-  // Auth check
   if (!admin) {
     if (!order_no || !phone) {
-      return sendJson(res, fail('Order number and phone required'))
+      return sendJson(res, fail('order_no and phone required'))
     }
     const { data: order } = await supabase
       .from('orders')
@@ -68,53 +57,30 @@ async function signUpload(req, res) {
   }
 
   if (!resolvedOrderId) return sendJson(res, fail('order_id required'))
-  if (!filename) return sendJson(res, fail('filename required'))
 
-  // Build storage path (ASCII only to avoid URL encoding issues)
-  const ext = filename.includes('.') ? '.' + filename.split('.').pop() : ''
-  const safeName = Date.now() + ext
+  // Decode base64
+  const matches = file_b64.match(/^data:(.+);base64,(.+)$/)
+  const rawB64 = matches ? matches[2] : file_b64
+  const mimeType = matches ? matches[1] : 'application/octet-stream'
+  const buffer = Buffer.from(rawB64, 'base64')
+
+  if (buffer.length > 50 * 1024 * 1024) {
+    return sendJson(res, fail('File too large (max 50MB)'))
+  }
+
+  // Build storage path (ASCII only)
+  const ext = filename.includes('.') ? '.' + filename.split('.').pop().toLowerCase() : ''
   const folder = type === 'deliverables' ? 'deliverables' : 'attachments'
-  const storagePath = `${resolvedOrderId}/${folder}/${safeName}`
+  const storagePath = `${resolvedOrderId}/${folder}/${Date.now()}${ext}`
 
-  // Create signed upload URL
-  const { data, error } = await supabase.storage
+  // Upload to Supabase Storage
+  const { error: uploadErr } = await supabase.storage
     .from('order-files')
-    .createSignedUploadUrl(storagePath)
-
-  if (error) throw error
-
-  sendJson(res, success({
-    path: storagePath,
-    signedUrl: data.signedUrl,
-    token: data.token,
-  }))
-}
-
-async function confirmUpload(req, res) {
-  const { order_id, order_no, phone, type, file_info } = req.body
-
-  if (!file_info || !file_info.path || !file_info.name) {
-    return sendJson(res, fail('file_info with path and name required'))
-  }
-
-  const admin = authMiddleware(req)
-  let resolvedOrderId = order_id
-
-  if (!admin) {
-    if (!order_no || !phone) {
-      return sendJson(res, fail('Order number and phone required'))
-    }
-    const { data: order } = await supabase
-      .from('orders')
-      .select('id')
-      .eq('order_no', order_no)
-      .eq('contact_phone', phone)
-      .single()
-    if (!order) return sendJson(res, fail('Order not found', -1, 404))
-    resolvedOrderId = order.id
-  }
-
-  if (!resolvedOrderId) return sendJson(res, fail('order_id required'))
+    .upload(storagePath, buffer, {
+      contentType: mimeType,
+      upsert: false,
+    })
+  if (uploadErr) throw uploadErr
 
   // Update order: append file info
   const urlField = type === 'deliverables' ? 'deliverable_urls' : 'attachment_urls'
@@ -125,7 +91,8 @@ async function confirmUpload(req, res) {
     .single()
 
   const existing = order?.[urlField] || []
-  const updated = [...existing, file_info]
+  const fileInfo = { name: filename, path: storagePath, size: buffer.length }
+  const updated = [...existing, fileInfo]
 
   const { error: updateErr } = await supabase
     .from('orders')
@@ -133,14 +100,13 @@ async function confirmUpload(req, res) {
     .eq('id', resolvedOrderId)
   if (updateErr) throw updateErr
 
-  sendJson(res, success({ confirmed: true }))
+  sendJson(res, success(fileInfo))
 }
 
 async function handleDownload(req, res) {
   const filePath = req.query.path || ''
   if (!filePath) return sendJson(res, fail('File path required'))
 
-  // Auth check
   const admin = authMiddleware(req)
   if (!admin) {
     const { phone, order_no } = req.query
@@ -158,7 +124,7 @@ async function handleDownload(req, res) {
     if (!order) return sendJson(res, fail('Access denied', -1, 403))
   }
 
-  // Bucket is public, use public URL
+  // Public bucket - redirect to public URL
   const { data } = supabase.storage
     .from('order-files')
     .getPublicUrl(filePath)

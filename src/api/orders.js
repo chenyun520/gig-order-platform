@@ -11,38 +11,25 @@ export default {
     return http.post('/api/orders/verify', { phone }).then(r => r.data)
   },
   async uploadAttachment(orderNo, phone, file) {
-    // Phase 1: get signed upload URL
-    const signRes = await http.post('/api/files', {
-      action: 'sign',
+    // Read file as base64 and send as JSON
+    const fileB64 = await readFileAsBase64(file)
+    const res = await http.post('/api/files', {
       order_no: orderNo,
       phone,
       type: 'attachments',
       filename: file.name,
-      size: file.size,
+      file_b64: fileB64,
     }).then(r => r.data)
 
-    if (signRes.code !== 0) throw new Error(signRes.message)
-
-    // Phase 2: upload directly to Supabase Storage
-    const uploadRes = await fetch(signRes.data.signedUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type || 'application/octet-stream' },
-      body: file,
-    })
-    if (!uploadRes.ok) {
-      throw new Error(`Upload failed: ${uploadRes.status}`)
-    }
-
-    // Phase 3: confirm — save file info to order
-    const fileInfo = { name: file.name, path: signRes.data.path, size: file.size }
-    const confirmRes = await http.post('/api/files', {
-      action: 'confirm',
-      order_no: orderNo,
-      phone,
-      type: 'attachments',
-      file_info: fileInfo,
-    }).then(r => r.data)
-
-    if (confirmRes.code !== 0) throw new Error(confirmRes.message)
+    if (res.code !== 0) throw new Error(res.message)
   },
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(new Error('Failed to read file'))
+    reader.readAsDataURL(file)
+  })
 }
