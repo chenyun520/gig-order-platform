@@ -11,10 +11,10 @@ export default {
     return http.post('/api/admin/services', data).then(r => r.data)
   },
   updateService(id, data) {
-    return http.put(`/api/admin/services/${id}`, data).then(r => r.data)
+    return http.put('/api/admin/services', { ...data, id }).then(r => r.data)
   },
   deleteService(id) {
-    return http.delete(`/api/admin/services/${id}`).then(r => r.data)
+    return http.delete('/api/admin/services', { data: { id } }).then(r => r.data)
   },
   getOrders(params) {
     return http.get('/api/admin/orders', { params }).then(r => r.data)
