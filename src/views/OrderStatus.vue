@@ -63,8 +63,12 @@
         <img src="/qr/payment.jpg" alt="收款码" class="status__pay-qr" />
         <p class="status__pay-hint">扫码完成付款后，联系我确认</p>
         <div class="status__pay-contact">
-          <button class="btn btn-outline btn-sm" @click="copyToClipboard('826857706', 'QQ号已复制')">QQ: 826857706</button>
-          <button class="btn btn-outline btn-sm" @click="copyToClipboard('ZQFservice', '微信号已复制')">微信: ZQFservice</button>
+          <button class="btn btn-outline btn-sm" @click="copyToClipboard('826857706', 'QQ号已复制')">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style="vertical-align:-2px;margin-right:4px"><path d="M12.003 2C6.004 2 3.002 6.044 3.002 9.5c0 1.724.534 3.508 1.562 4.938-.168.642-.742 1.856-1.462 2.658-.152.172-.044.424.18.418 1.26-.032 3.16-.7 4.046-1.186A8.31 8.31 0 0012.003 15c5.997 0 9-4.044 9-7.5S18 2 12.003 2zm-2.54 5.186a1.066 1.066 0 110 2.132 1.066 1.066 0 010-2.132zm5.08 0a1.066 1.066 0 110 2.132 1.066 1.066 0 010-2.132z"/></svg>QQ: 826857706
+          </button>
+          <button class="btn btn-outline btn-sm" @click="copyToClipboard('ZQFservice', '微信号已复制')">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" style="vertical-align:-2px;margin-right:4px"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18z"/></svg>微信: ZQFservice
+          </button>
         </div>
       </div>
 
