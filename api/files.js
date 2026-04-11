@@ -27,6 +27,10 @@ export default async function handler(req, res) {
 async function handleUploadAction(req, res) {
   const { action } = req.body || {}
 
+  if (!action) {
+    return sendJson(res, fail('Missing action field. body=' + JSON.stringify(req.body)))
+  }
+
   if (action === 'sign') {
     return await signUpload(req, res)
   }
