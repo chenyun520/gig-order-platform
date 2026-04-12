@@ -1,7 +1,10 @@
 <template>
   <nav class="nav">
     <div class="container nav-inner">
-      <router-link to="/" class="nav-logo">张千帆设计公司</router-link>
+      <router-link to="/" class="nav-logo">
+        <img src="/logo.png" alt="Logo" class="nav-logo__img" />
+        <span>张千帆设计公司</span>
+      </router-link>
 
       <button class="nav-toggle" @click="open = !open" aria-label="Toggle menu">
         <span class="nav-toggle-bar" />
@@ -54,11 +57,21 @@ function goContact() {
 }
 
 .nav-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-weight: 700;
   font-size: 1.25rem;
   color: var(--color-black);
   text-decoration: none;
   letter-spacing: -0.02em;
+}
+
+.nav-logo__img {
+  height: 32px;
+  width: 32px;
+  object-fit: contain;
+  border-radius: 4px;
 }
 
 .nav-links {

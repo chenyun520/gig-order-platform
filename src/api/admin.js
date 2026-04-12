@@ -43,6 +43,19 @@ export default {
   getStats() {
     return http.get('/api/admin/stats').then(r => r.data)
   },
+  // Notifications
+  getNotifications() {
+    return http.get('/api/admin/notifications').then(r => r.data)
+  },
+  createNotification(data) {
+    return http.post('/api/admin/notifications', data).then(r => r.data)
+  },
+  updateNotification(id, data) {
+    return http.put('/api/admin/notifications', { ...data, id }).then(r => r.data)
+  },
+  deleteNotification(id) {
+    return http.delete('/api/admin/notifications', { data: { id } }).then(r => r.data)
+  },
 }
 
 function readFileAsBase64(file) {

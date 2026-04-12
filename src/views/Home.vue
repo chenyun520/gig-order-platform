@@ -13,6 +13,23 @@
       </div>
     </section>
 
+    <!-- Notifications Banner -->
+    <section class="noti-banner" v-if="notifications.length">
+      <div class="container">
+        <div class="noti-banner__inner">
+          <div class="noti-banner__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+          <div class="noti-banner__content">
+            <div v-for="n in notifications" :key="n.id" class="noti-banner__item">
+              <strong>{{ n.title }}</strong>
+              <span v-if="n.content">{{ n.content }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Services -->
     <section id="services" class="section">
       <div class="container">
@@ -37,10 +54,29 @@
       <div class="container" style="text-align: center">
         <h2 class="section-title">更多案例</h2>
         <p class="section-subtitle">浏览更多设计作品与项目案例</p>
-        <a href="https://www.cherishbloom.top/" target="_blank" rel="noopener" class="btn btn-primary btn-lg cases-btn">
+        <button class="btn btn-primary btn-lg cases-btn" @click="showCaseModal = true">
           查看案例作品
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </a>
+        </button>
+      </div>
+
+      <!-- 加好友看案例 Modal -->
+      <div class="modal-overlay" v-if="showCaseModal" @click.self="showCaseModal = false">
+        <div class="modal-box">
+          <h3 class="modal-title">查看案例作品</h3>
+          <p class="modal-desc">请添加好友查看更多案例作品，沟通更方便~</p>
+          <div class="modal-contact-btns">
+            <button class="modal-contact-btn qq" @click="copyToClipboard('826857706', 'QQ号已复制，快去添加好友吧~')">
+              <svg viewBox="0 0 16 16" fill="currentColor" width="24" height="24"><path d="M6.048 3.323c.022.277-.13.523-.338.55-.21.026-.397-.176-.419-.453s.13-.523.338-.55c.21-.026.397.176.42.453Zm2.265-.24c-.603-.146-.894.256-.936.333-.027.048-.008.117.037.15.045.035.092.025.119-.003.361-.39.751-.172.829-.129l.011.007c.053.024.147.028.193-.098.023-.063.017-.11-.006-.142-.016-.023-.089-.08-.247-.118"/><path d="M11.727 6.719c0-.022.01-.375.01-.557 0-3.07-1.45-6.156-5.015-6.156S1.708 3.092 1.708 6.162c0 .182.01.535.01.557l-.72 1.795a26 26 0 0 0-.534 1.508c-.68 2.187-.46 3.093-.292 3.113.36.044 1.401-1.647 1.401-1.647 0 .979.504 2.256 1.594 3.179-.408.126-.907.319-1.228.556-.29.213-.253.43-.201.518.228.386 3.92.246 4.985.126 1.065.12 4.756.26 4.984-.126.052-.088.088-.305-.2-.518-.322-.237-.822-.43-1.23-.557 1.09-.922 1.594-2.2 1.594-3.178 0 0 1.041 1.69 1.401 1.647.168-.02.388-.926-.292-3.113a26 26 0 0 0-.534-1.508l-.72-1.795Z"/></svg>
+              <span>QQ: 826857706</span>
+            </button>
+            <button class="modal-contact-btn wx" @click="copyToClipboard('ZQFservice', '微信号已复制，快去添加好友吧~')">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.68 4.025c-3.837 0-6.953 2.708-6.953 6.048 0 3.342 3.116 6.048 6.953 6.048.748 0 1.47-.1 2.15-.3a.714.714 0 01.574.08l1.432.84a.276.276 0 00.14.045.24.24 0 00.234-.236c0-.058-.023-.115-.038-.17l-.294-1.12a.477.477 0 01.17-.533c1.478-1.094 2.39-2.761 2.39-4.654 0-3.34-3.117-6.048-6.954-6.048h.2zm-2.136 3.34c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948zm4.272 0c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948z"/></svg>
+              <span>微信: ZQFservice</span>
+            </button>
+          </div>
+          <button class="modal-close" @click="showCaseModal = false">关闭</button>
+        </div>
       </div>
     </section>
 
@@ -110,13 +146,16 @@
 import { ref, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import serviceApi from '../api/services'
+import notificationApi from '../api/notifications'
 import ServiceCard from '../components/ServiceCard.vue'
 import { useToast } from '../composables/useToast'
 
 const route = useRoute()
 const toast = useToast()
 const services = ref([])
+const notifications = ref([])
 const loading = ref(true)
+const showCaseModal = ref(false)
 
 onMounted(async () => {
   try {
@@ -126,6 +165,14 @@ onMounted(async () => {
     console.error(e)
   } finally {
     loading.value = false
+  }
+
+  // Fetch notifications
+  try {
+    const res = await notificationApi.getList()
+    if (res.code === 0) notifications.value = res.data || []
+  } catch (e) {
+    console.error(e)
   }
 
   // Handle hash scroll from other pages
@@ -194,6 +241,42 @@ function copyToClipboard(text, msg) {
   display: flex;
   gap: var(--space-3);
   flex-wrap: wrap;
+}
+
+/* Notification banner */
+.noti-banner {
+  background: #fffbeb;
+  border-bottom: 1px solid #fde68a;
+}
+
+.noti-banner__inner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+}
+
+.noti-banner__icon {
+  flex-shrink: 0;
+  color: #d97706;
+  margin-top: 2px;
+}
+
+.noti-banner__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.noti-banner__item {
+  font-size: 0.9375rem;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+.noti-banner__item strong {
+  margin-right: var(--space-2);
 }
 
 .section {
@@ -466,5 +549,85 @@ function copyToClipboard(text, msg) {
   font-weight: 340;
   color: rgba(255, 255, 255, 0.4);
   letter-spacing: -0.01em;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--space-4);
+}
+
+.modal-box {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+
+.modal-title {
+  margin-bottom: var(--space-3);
+}
+
+.modal-desc {
+  color: var(--color-gray-500);
+  margin-bottom: var(--space-6);
+}
+
+.modal-contact-btns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.modal-contact-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  color: var(--color-white);
+}
+
+.modal-contact-btn:hover {
+  opacity: 0.85;
+}
+
+.modal-contact-btn.qq {
+  background: linear-gradient(60deg, rgb(0, 140, 255) 0%, rgb(100, 200, 255) 100%);
+}
+
+.modal-contact-btn.wx {
+  background: linear-gradient(60deg, rgb(7, 193, 96) 0%, rgb(76, 230, 140) 100%);
+}
+
+.modal-close {
+  background: none;
+  border: 1px solid var(--color-gray-200);
+  padding: 8px 24px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  color: var(--color-gray-500);
+  font-size: 0.875rem;
+  transition: all 0.15s;
+}
+
+.modal-close:hover {
+  background: var(--color-gray-100);
+  color: var(--color-black);
 }
 </style>

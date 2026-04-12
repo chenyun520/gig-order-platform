@@ -46,6 +46,11 @@ const routes = [
         name: 'OrderManage',
         component: () => import('../views/admin/OrderManage.vue'),
       },
+      {
+        path: 'notifications',
+        name: 'NotificationManage',
+        component: () => import('../views/admin/NotificationManage.vue'),
+      },
     ],
   },
 ]

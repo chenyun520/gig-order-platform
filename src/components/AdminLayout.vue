@@ -14,6 +14,9 @@
         <router-link to="/admin/orders" class="admin-sidebar__link" active-class="admin-sidebar__link--active">
           订单管理
         </router-link>
+        <router-link to="/admin/notifications" class="admin-sidebar__link" active-class="admin-sidebar__link--active">
+          通知通告
+        </router-link>
       </nav>
       <div class="admin-sidebar__footer">
         <router-link to="/" class="admin-sidebar__link">← 返回前台</router-link>
