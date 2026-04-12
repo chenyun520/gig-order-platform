@@ -35,6 +35,46 @@
       <div class="container">
         <h2 class="section-title">服务项目</h2>
         <p class="section-subtitle">选择你需要的专业服务</p>
+
+        <!-- Search -->
+        <div class="search-wrap">
+          <div class="search-poda">
+            <div class="search-glow"></div>
+            <div class="search-dark-border"></div>
+            <div class="search-dark-border"></div>
+            <div class="search-dark-border"></div>
+            <div class="search-white"></div>
+            <div class="search-border"></div>
+            <div class="search-main">
+              <input placeholder="搜索服务..." type="text" v-model="searchQuery" class="search-input" />
+              <div class="search-input-mask"></div>
+              <div class="search-pink-mask"></div>
+              <div class="search-filter-border"></div>
+              <div class="search-filter-icon">
+                <svg preserveAspectRatio="none" height="27" width="27" viewBox="4.8 4.56 14.832 15.408" fill="none">
+                  <path d="M8.16 6.65002H15.83C16.47 6.65002 16.99 7.17002 16.99 7.81002V9.09002C16.99 9.56002 16.7 10.14 16.41 10.43L13.91 12.64C13.56 12.93 13.33 13.51 13.33 13.98V16.48C13.33 16.83 13.1 17.29 12.81 17.47L12 17.98C11.24 18.45 10.2 17.92 10.2 16.99V13.91C10.2 13.5 9.97 12.98 9.73 12.69L7.52 10.36C7.23 10.08 7 9.55002 7 9.20002V7.87002C7 7.17002 7.52 6.65002 8.16 6.65002Z" stroke="#d6d6e6" stroke-width="1" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </div>
+              <div class="search-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" height="24" fill="none">
+                  <circle stroke="url(#searchGrad)" r="8" cy="11" cx="11"></circle>
+                  <line stroke="url(#searchGradL)" y2="16.65" y1="22" x2="16.65" x1="22"></line>
+                  <defs>
+                    <linearGradient gradientTransform="rotate(50)" id="searchGrad">
+                      <stop stop-color="#f8e7f8" offset="0%"></stop>
+                      <stop stop-color="#b6a9b7" offset="50%"></stop>
+                    </linearGradient>
+                    <linearGradient id="searchGradL">
+                      <stop stop-color="#b6a9b7" offset="0%"></stop>
+                      <stop stop-color="#837484" offset="50%"></stop>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div v-if="loading" class="services-grid">
           <div v-for="i in 6" :key="i" class="skeleton-card">
             <div class="skeleton skeleton-icon"></div>
@@ -43,8 +83,11 @@
             <div class="skeleton skeleton-text skeleton-text--short"></div>
           </div>
         </div>
-        <div v-else class="services-grid">
-          <ServiceCard v-for="s in services" :key="s.id" :service="s" />
+        <div v-else-if="filteredServices.length" class="services-grid">
+          <ServiceCard v-for="s in filteredServices" :key="s.id" :service="s" />
+        </div>
+        <div v-else class="search-empty">
+          <p>没有找到匹配「{{ searchQuery }}」的服务</p>
         </div>
       </div>
     </section>
@@ -143,7 +186,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import serviceApi from '../api/services'
 import notificationApi from '../api/notifications'
@@ -156,6 +199,16 @@ const services = ref([])
 const notifications = ref([])
 const loading = ref(true)
 const showCaseModal = ref(false)
+const searchQuery = ref('')
+
+const filteredServices = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) return services.value
+  return services.value.filter(s =>
+    s.title.toLowerCase().includes(q) ||
+    (s.description && s.description.toLowerCase().includes(q))
+  )
+})
 
 onMounted(async () => {
   try {
@@ -300,6 +353,167 @@ function copyToClipboard(text, msg) {
   font-weight: 340;
   color: var(--color-gray-500);
   margin-bottom: var(--space-8);
+}
+
+/* Search Input */
+.search-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-8);
+}
+
+.search-empty {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--color-gray-400);
+}
+
+.search-poda {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.search-input {
+  background-color: #010201;
+  border: none;
+  width: 301px;
+  height: 56px;
+  border-radius: 10px;
+  color: white;
+  padding-inline: 59px;
+  font-size: 16px;
+  font-family: var(--font-sans);
+}
+
+.search-input::placeholder { color: #c0b9c0; }
+.search-input:focus { outline: none; }
+
+.search-main { position: relative; }
+.search-main:focus-within > .search-input-mask { display: none; }
+
+.search-input-mask {
+  pointer-events: none;
+  width: 100px; height: 20px;
+  position: absolute;
+  background: linear-gradient(90deg, transparent, black);
+  top: 18px; left: 70px;
+}
+
+.search-pink-mask {
+  pointer-events: none;
+  width: 30px; height: 20px;
+  position: absolute;
+  background: #cf30aa;
+  top: 10px; left: 5px;
+  filter: blur(20px);
+  opacity: 0.8;
+  transition: all 2s;
+}
+
+.search-poda:hover > .search-pink-mask { opacity: 0; }
+
+.search-white,
+.search-border,
+.search-dark-border,
+.search-glow {
+  max-height: 70px; max-width: 314px;
+  height: 100%; width: 100%;
+  position: absolute;
+  overflow: hidden; z-index: -1;
+  border-radius: 12px;
+  filter: blur(3px);
+}
+
+.search-white { max-height: 63px; max-width: 307px; border-radius: 10px; filter: blur(2px); }
+.search-white::before {
+  content: ""; z-index: -2; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(83deg);
+  width: 600px; height: 600px;
+  background-repeat: no-repeat;
+  filter: brightness(1.4);
+  background-image: conic-gradient(rgba(0,0,0,0) 0%, #a099d8, rgba(0,0,0,0) 8%, rgba(0,0,0,0) 50%, #dfa2da, rgba(0,0,0,0) 58%);
+  transition: all 2s;
+}
+
+.search-border { max-height: 59px; max-width: 303px; border-radius: 11px; filter: blur(0.5px); }
+.search-border::before {
+  content: ""; z-index: -2; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(70deg);
+  width: 600px; height: 600px;
+  filter: brightness(1.3);
+  background-repeat: no-repeat;
+  background-image: conic-gradient(#1c191c, #402fb5 5%, #1c191c 14%, #1c191c 50%, #cf30aa 60%, #1c191c 64%);
+  transition: all 2s;
+}
+
+.search-dark-border { max-height: 65px; max-width: 312px; }
+.search-dark-border::before {
+  content: ""; z-index: -2; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(82deg);
+  width: 600px; height: 600px;
+  background-repeat: no-repeat;
+  background-image: conic-gradient(rgba(0,0,0,0), #18116a, rgba(0,0,0,0) 10%, rgba(0,0,0,0) 50%, #6e1b60, rgba(0,0,0,0) 60%);
+  transition: all 2s;
+}
+
+.search-glow {
+  overflow: hidden; filter: blur(30px); opacity: 0.4;
+  max-height: 130px; max-width: 354px;
+}
+.search-glow::before {
+  content: ""; z-index: -2; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(60deg);
+  width: 999px; height: 999px;
+  background-repeat: no-repeat;
+  background-image: conic-gradient(#000, #402fb5 5%, #000 38%, #000 50%, #cf30aa 60%, #000 87%);
+  transition: all 2s;
+}
+
+/* Hover rotations */
+.search-poda:hover > .search-dark-border::before { transform: translate(-50%, -50%) rotate(-98deg); }
+.search-poda:hover > .search-glow::before { transform: translate(-50%, -50%) rotate(-120deg); }
+.search-poda:hover > .search-white::before { transform: translate(-50%, -50%) rotate(-97deg); }
+.search-poda:hover > .search-border::before { transform: translate(-50%, -50%) rotate(-110deg); }
+
+/* Focus rotations */
+.search-poda:focus-within > .search-dark-border::before { transform: translate(-50%, -50%) rotate(442deg); transition: all 4s; }
+.search-poda:focus-within > .search-glow::before { transform: translate(-50%, -50%) rotate(420deg); transition: all 4s; }
+.search-poda:focus-within > .search-white::before { transform: translate(-50%, -50%) rotate(443deg); transition: all 4s; }
+.search-poda:focus-within > .search-border::before { transform: translate(-50%, -50%) rotate(430deg); transition: all 4s; }
+
+.search-filter-icon {
+  position: absolute; top: 8px; right: 8px;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2; max-height: 40px; max-width: 38px;
+  height: 100%; width: 100%;
+  isolation: isolate; overflow: hidden;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #161329, black, #1d1b4b);
+  border: 1px solid transparent;
+}
+
+.search-filter-border {
+  height: 42px; width: 40px;
+  position: absolute; overflow: hidden;
+  top: 7px; right: 7px;
+  border-radius: 10px;
+}
+.search-filter-border::before {
+  content: ""; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(90deg);
+  width: 600px; height: 600px;
+  background-repeat: no-repeat;
+  filter: brightness(1.35);
+  background-image: conic-gradient(rgba(0,0,0,0), #3d3a4f, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 50%, #3d3a4f, rgba(0,0,0,0) 100%);
+  animation: searchRotate 4s linear infinite;
+}
+
+.search-icon { position: absolute; left: 20px; top: 15px; }
+
+@keyframes searchRotate {
+  100% { transform: translate(-50%, -50%) rotate(450deg); }
 }
 
 .services-grid {
