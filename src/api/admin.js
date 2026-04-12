@@ -41,20 +41,20 @@ export default {
     return http.get('/api/admin/logs', { params }).then(r => r.data)
   },
   getStats() {
-    return http.get('/api/admin/stats').then(r => r.data)
+    return http.get('/api/admin/logs?type=stats').then(r => r.data)
   },
-  // Notifications
+  // Notifications (public + admin CRUD in one endpoint)
   getNotifications() {
-    return http.get('/api/admin/notifications').then(r => r.data)
+    return http.get('/api/notifications').then(r => r.data)
   },
   createNotification(data) {
-    return http.post('/api/admin/notifications', data).then(r => r.data)
+    return http.post('/api/notifications', data).then(r => r.data)
   },
   updateNotification(id, data) {
-    return http.put('/api/admin/notifications', { ...data, id }).then(r => r.data)
+    return http.put('/api/notifications', { ...data, id }).then(r => r.data)
   },
   deleteNotification(id) {
-    return http.delete('/api/admin/notifications', { data: { id } }).then(r => r.data)
+    return http.delete('/api/notifications', { data: { id } }).then(r => r.data)
   },
 }
 
