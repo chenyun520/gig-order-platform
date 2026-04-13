@@ -201,10 +201,19 @@
               </div>
             </div>
             <div class="footer-right">
-              <div class="footer-sub-col">
-                <router-link to="/order/query" class="footer-link">查询订单</router-link>
-                <router-link to="/admin/login" class="footer-link">管理后台</router-link>
-                <a class="footer-link" @click="showCaseModal = true">查看案例</a>
+              <div class="footer-links-col">
+                <router-link to="/order/query" class="footer-link-pill">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  查询订单
+                </router-link>
+                <a class="footer-link-pill" @click="showCaseModal = true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  查看案例
+                </a>
+                <router-link to="/admin/login" class="footer-link-pill footer-link-pill--subtle">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  管理后台
+                </router-link>
               </div>
             </div>
           </div>
@@ -258,6 +267,7 @@ let videoFrames = { frame: 0 }
 const year = new Date().getFullYear()
 
 const frameCount = 198
+let framesLoaded = false
 
 const filteredServices = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
@@ -267,6 +277,24 @@ const filteredServices = computed(() => {
     (s.description && s.description.toLowerCase().includes(q))
   )
 })
+
+// Preload frame images immediately (during intro animation)
+function preloadFrames() {
+  frameImages = []
+  let imagesToLoad = frameCount
+  const onLoad = () => {
+    imagesToLoad--
+    if (imagesToLoad <= 0) framesLoaded = true
+  }
+  for (let i = 0; i < frameCount; i++) {
+    const img = new Image()
+    img.onload = onLoad
+    img.onerror = onLoad
+    img.src = `/frames/Image${i + 1}.jpg`
+    frameImages.push(img)
+  }
+}
+preloadFrames()
 
 function initScrollAnimation() {
   // Lenis smooth scroll
@@ -303,24 +331,29 @@ function initScrollAnimation() {
   }
   setCanvasSize()
 
-  // Load frame images
-  frameImages = []
-  let imagesToLoad = frameCount
-
-  const onLoad = () => {
-    imagesToLoad--
-    if (imagesToLoad <= 0) {
-      render()
-      setupScrollTrigger()
+  // If frames already preloaded, render immediately; otherwise load them
+  if (framesLoaded && frameImages.length === frameCount) {
+    render()
+    setupScrollTrigger()
+  } else {
+    // Fallback: load if not preloaded yet
+    frameImages = []
+    let imagesToLoad = frameCount
+    const onLoad = () => {
+      imagesToLoad--
+      if (imagesToLoad <= 0) {
+        framesLoaded = true
+        render()
+        setupScrollTrigger()
+      }
     }
-  }
-
-  for (let i = 0; i < frameCount; i++) {
-    const img = new Image()
-    img.onload = onLoad
-    img.onerror = onLoad
-    img.src = `/frames/Image${i + 1}.jpg`
-    frameImages.push(img)
+    for (let i = 0; i < frameCount; i++) {
+      const img = new Image()
+      img.onload = onLoad
+      img.onerror = onLoad
+      img.src = `/frames/Image${i + 1}.jpg`
+      frameImages.push(img)
+    }
   }
 
   function render() {
@@ -1189,7 +1222,7 @@ footer {
 .footer-right {
   flex: 2;
   display: flex;
-  gap: 3rem;
+  justify-content: flex-end;
 }
 
 .footer-heading {
@@ -1239,25 +1272,50 @@ footer {
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.footer-sub-col {
-  flex: 1;
+.footer-links-col {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-2);
+  align-items: flex-end;
 }
 
-.footer-link {
-  font-size: 0.9375rem;
-  font-weight: 300;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
+.footer-link-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   text-decoration: none;
-  transition: color 0.15s;
+  cursor: pointer;
+  transition: all 0.15s;
 }
 
-.footer-link:hover {
+.footer-link-pill svg {
+  opacity: 0.5;
+}
+
+.footer-link-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
   color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.footer-link-pill:hover svg {
+  opacity: 0.8;
+}
+
+.footer-link-pill--subtle {
+  opacity: 0.5;
+  font-size: 0.8125rem;
+}
+
+.footer-link-pill--subtle:hover {
+  opacity: 1;
 }
 
 .footer-bottom {
@@ -1307,8 +1365,10 @@ footer {
     max-width: 100%;
   }
   .footer-right {
-    flex-direction: column;
-    gap: 1.5rem;
+    justify-content: flex-start;
+  }
+  .footer-links-col {
+    align-items: flex-start;
   }
   .footer-bottom {
     flex-direction: column;

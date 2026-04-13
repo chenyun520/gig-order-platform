@@ -17,7 +17,6 @@
         <router-link to="/order/query" class="nav-link" @click="open = false">订单查询</router-link>
         <a class="nav-link" @click="goContact">联系我</a>
         <a class="nav-link" @click="goCases">案例</a>
-        <router-link to="/admin/login" class="btn btn-sm btn-outline" @click="open = false">管理</router-link>
 
         <!-- Dark Mode Toggle -->
         <div class="theme-toggle" @click="open = false">
