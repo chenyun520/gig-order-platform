@@ -16,6 +16,9 @@ export default {
   deleteService(id) {
     return http.delete('/api/admin/services', { data: { id } }).then(r => r.data)
   },
+  reorderServices(orders) {
+    return http.patch('/api/admin/services', { orders }).then(r => r.data)
+  },
   getOrders(params) {
     return http.get('/api/admin/orders', { params }).then(r => r.data)
   },

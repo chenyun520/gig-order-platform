@@ -1,5 +1,5 @@
 <template>
-  <nav class="nav">
+  <nav class="nav" ref="navEl">
     <div class="container nav-inner">
       <router-link to="/" class="nav-logo">
         <img src="/logo.png" alt="Logo" class="nav-logo__img" />
@@ -16,6 +16,7 @@
         <router-link to="/" class="nav-link" @click="open = false">首页</router-link>
         <router-link to="/order/query" class="nav-link" @click="open = false">订单查询</router-link>
         <a class="nav-link" @click="goContact">联系我</a>
+        <a class="nav-link" @click="goCases">案例</a>
         <router-link to="/admin/login" class="btn btn-sm btn-outline" @click="open = false">管理</router-link>
 
         <!-- Dark Mode Toggle -->
@@ -40,6 +41,7 @@ const router = useRouter()
 const route = useRoute()
 const open = ref(false)
 const isDark = ref(false)
+const navEl = ref(null)
 
 onMounted(() => {
   const saved = localStorage.getItem('theme')
@@ -67,15 +69,26 @@ function goContact() {
     router.push({ path: '/', hash: '#contact' })
   }
 }
+
+function goCases() {
+  open.value = false
+  if (route.path === '/') {
+    document.querySelector('.cases-section')?.scrollIntoView({ behavior: 'smooth' })
+  } else {
+    router.push('/')
+  }
+}
 </script>
 
 <style scoped>
 .nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
-  background: var(--color-white);
-  border-bottom: 1px solid var(--color-gray-200);
+  background: transparent;
+  will-change: opacity;
 }
 
 .nav-inner {
@@ -91,9 +104,10 @@ function goContact() {
   gap: var(--space-2);
   font-weight: 700;
   font-size: 1.25rem;
-  color: var(--color-black);
+  color: #fff;
   text-decoration: none;
   letter-spacing: -0.02em;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .nav-logo__img {
@@ -112,21 +126,33 @@ function goContact() {
 .nav-link {
   font-size: 0.9375rem;
   font-weight: 340;
-  color: var(--color-black);
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   padding: 6px 12px;
   border-radius: var(--radius-pill);
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
   cursor: pointer;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .nav-link:hover {
-  background: var(--color-glass-dark);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .nav-link.router-link-active {
-  background: var(--color-black);
-  color: var(--color-white);
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.btn-outline {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.btn-outline:hover {
+  border-color: #fff;
+  color: #fff;
 }
 
 .nav-toggle {
@@ -143,7 +169,7 @@ function goContact() {
   display: block;
   width: 20px;
   height: 2px;
-  background: var(--color-black);
+  background: #fff;
   border-radius: 1px;
 }
 
@@ -154,9 +180,9 @@ function goContact() {
   position: relative;
   width: 56px;
   height: 28px;
-  background: #d6d6d6;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 50px;
-  box-shadow: inset -4px -4px 8px #ffffff, inset 4px 4px 8px #b0b0b0;
+  box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.1), inset 4px 4px 8px rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
 }
 
@@ -189,7 +215,7 @@ html.dark-mode .theme-toggle {
   border-radius: 50%;
   top: 3px;
   left: 3px;
-  box-shadow: -2px -2px 4px #ffffff, 2px 2px 4px #b0b0b0;
+  box-shadow: -2px -2px 4px rgba(255, 255, 255, 0.3), 2px 2px 4px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease-in-out;
   display: flex;
   align-items: center;
@@ -218,7 +244,7 @@ html.dark-mode .theme-toggle {
 }
 
 .toggle-switch:hover .toggle-knob {
-  box-shadow: -2px -2px 6px #ffffff, 2px 2px 6px #9b9b9b;
+  box-shadow: -2px -2px 6px rgba(255, 255, 255, 0.4), 2px 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 @media (max-width: 768px) {
@@ -232,10 +258,11 @@ html.dark-mode .theme-toggle {
     top: 64px;
     left: 0;
     right: 0;
-    background: var(--color-white);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
     flex-direction: column;
     padding: var(--space-4);
-    border-bottom: 1px solid var(--color-gray-200);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     gap: var(--space-2);
     align-items: center;
   }

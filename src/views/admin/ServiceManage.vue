@@ -46,6 +46,7 @@
       <table class="manage-table">
         <thead>
           <tr>
+            <th style="width: 48px">排序</th>
             <th>名称</th>
             <th>定价</th>
             <th>价格</th>
@@ -54,7 +55,23 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="s in services" :key="s.id">
+          <tr v-for="(s, index) in services" :key="s.id">
+            <td>
+              <div class="sort-btns">
+                <button
+                  class="sort-btn"
+                  :disabled="index === 0"
+                  @click="moveUp(index)"
+                  title="上移"
+                >&uarr;</button>
+                <button
+                  class="sort-btn"
+                  :disabled="index === services.length - 1"
+                  @click="moveDown(index)"
+                  title="下移"
+                >&darr;</button>
+              </div>
+            </td>
             <td>{{ s.title }}</td>
             <td>{{ { fixed: '固定', quote: '询价', mixed: '混合' }[s.price_type] }}</td>
             <td>{{ s.price_type !== 'quote' ? '¥' + s.price + '/' + s.unit : '-' }}</td>
@@ -124,6 +141,35 @@ async function toggleActive(s) {
     await fetchServices()
   } catch (e) { alert('操作失败') }
 }
+
+async function moveUp(index) {
+  if (index <= 0) return
+  const list = [...services.value]
+  const swap = list[index]
+  list[index] = list[index - 1]
+  list[index - 1] = swap
+  await saveOrder(list)
+}
+
+async function moveDown(index) {
+  if (index >= services.value.length - 1) return
+  const list = [...services.value]
+  const swap = list[index]
+  list[index] = list[index + 1]
+  list[index + 1] = swap
+  await saveOrder(list)
+}
+
+async function saveOrder(list) {
+  services.value = list
+  const orders = list.map((s, i) => ({ id: s.id, sort_order: i }))
+  try {
+    await adminApi.reorderServices(orders)
+  } catch (e) {
+    alert('排序保存失败')
+    await fetchServices()
+  }
+}
 </script>
 
 <style scoped>
@@ -170,6 +216,37 @@ async function toggleActive(s) {
 
 .manage-table td .btn {
   margin-right: var(--space-1);
+}
+
+.sort-btns {
+  display: flex;
+  gap: 2px;
+}
+
+.sort-btn {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--color-gray-200);
+  background: var(--color-white);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-600);
+  transition: all 0.1s;
+}
+
+.sort-btn:hover:not(:disabled) {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-400);
+}
+
+.sort-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .status-dot {

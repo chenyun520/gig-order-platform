@@ -1,50 +1,54 @@
 <template>
   <div class="intro-root" v-if="showIntro">
-    <!-- Preloader (top half after split) -->
+    <!-- Preloader layer -->
     <div class="intro-preloader" ref="preloader">
       <div class="intro-title">
-        <span v-for="(char, i) in titleChars" :key="'a-' + i" class="intro-char">
-          <span class="intro-char-inner">{{ char }}</span>
+        <span
+          v-for="(char, i) in titleChars"
+          :key="'a' + i"
+          class="ichar"
+          :class="{ 'first-char': i === 0 }"
+        >
+          <span class="ichar-inner">{{ char }}</span>
         </span>
       </div>
       <div class="outro-title">
-        <span v-for="(char, i) in outroChars" :key="'b-' + i" class="outro-char">
-          <span class="outro-char-inner">{{ char }}</span>
+        <span v-for="(char, i) in outroChars" :key="'b' + i" class="ochar">
+          <span class="ochar-inner">{{ char }}</span>
         </span>
       </div>
     </div>
 
-    <!-- Split overlay (bottom half after split) -->
+    <!-- Split overlay — pre-positioned in final state -->
     <div class="intro-split" ref="splitOverlay">
       <div class="intro-title">
-        <span v-for="(char, i) in titleChars" :key="'c-' + i" class="intro-char">
-          <span class="intro-char-inner">{{ char }}</span>
+        <span
+          v-for="(char, i) in titleChars"
+          :key="'c' + i"
+          class="ichar"
+          :class="{ 'first-char': i === 0 }"
+        >
+          <span class="ichar-inner">{{ char }}</span>
         </span>
       </div>
       <div class="outro-title">
-        <span v-for="(char, i) in outroChars" :key="'d-' + i" class="outro-char">
-          <span class="outro-char-inner">{{ char }}</span>
+        <span v-for="(char, i) in outroChars" :key="'d' + i" class="ochar">
+          <span class="ochar-inner">{{ char }}</span>
         </span>
       </div>
     </div>
 
     <!-- Floating tags -->
     <div class="intro-tags" ref="tagsOverlay">
-      <div class="intro-tag tag-1">
-        <span class="intro-tag-word">课件制作</span>
-      </div>
-      <div class="intro-tag tag-2">
-        <span class="intro-tag-word">网页开发</span>
-      </div>
-      <div class="intro-tag tag-3">
-        <span class="intro-tag-word">海报设计</span>
-      </div>
+      <div class="itag tag-1"><span class="itag-word">Courseware</span></div>
+      <div class="itag tag-2"><span class="itag-word">Web Design</span></div>
+      <div class="itag tag-3"><span class="itag-word">Visual Design</span></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import gsap from 'gsap'
 
 const emit = defineEmits(['done'])
@@ -54,96 +58,121 @@ const preloader = ref(null)
 const splitOverlay = ref(null)
 const tagsOverlay = ref(null)
 
-const titleText = '张千帆设计'
+// "ZHANG" → Z stays, HANG slides out; "QF" slides in → "ZQF"
+const titleText = 'ZHANG'
 const outroText = 'QF'
 const titleChars = titleText.split('')
 const outroChars = outroText.split('')
 
-onMounted(() => {
-  // Skip if already seen this session
+function cleanup() {
+  document.body.style.overflow = ''
+  sessionStorage.setItem('intro_seen', '1')
+  window.dispatchEvent(new Event('intro-done'))
+  showIntro.value = false
+  emit('done')
+}
+
+onMounted(async () => {
   if (sessionStorage.getItem('intro_seen')) {
     showIntro.value = false
     emit('done')
     return
   }
 
+  document.body.style.overflow = 'hidden'
+  await nextTick()
+
   const isMobile = window.innerWidth <= 768
+  const ease = 'expo.inOut'
 
-  const tl = gsap.timeline({
-    defaults: { ease: 'power3.inOut' },
-    onComplete: () => {
-      sessionStorage.setItem('intro_seen', '1')
-      showIntro.value = false
-      emit('done')
-    }
-  })
+  // First char final position — "Z" right next to "QF"
+  const firstCharFinalX = isMobile ? '3rem' : '5rem'
+  const firstCharFinalY = isMobile ? '-0.3rem' : '-0.5rem'
+  const firstCharOvershootX = isMobile ? '4rem' : '7rem'
+  const outroFinalX = isMobile ? '0' : '0rem'
 
-  // 1. Tags slide in
-  tl.to('.intro-tag-word', {
-    y: '0%',
-    duration: 0.6,
-    stagger: 0.08,
-  }, 0.3)
+  try {
+    // ===== INITIAL STATES =====
+    gsap.set('.intro-preloader .ichar-inner', { y: '-100%' })
+    gsap.set('.intro-preloader .ochar-inner', { y: '-100%' })
+    gsap.set('.itag-word', { y: '-100%' })
 
-  // 2. Title characters slide in
-  tl.to('.intro-preloader .intro-char-inner', {
-    y: '0%',
-    duration: 0.6,
-    stagger: 0.04,
-  }, 0.3)
-
-  // 3. Title characters slide out (except first)
-  tl.to('.intro-preloader .intro-char-inner', {
-    y: '100%',
-    duration: 0.5,
-    stagger: 0.03,
-  }, 1.8)
-
-  // 4. Outro characters slide in
-  tl.to('.intro-preloader .outro-char-inner', {
-    y: '0%',
-    duration: 0.6,
-    stagger: 0.08,
-  }, 2.2)
-
-  // 5. Hold + prepare for split
-  tl.to({}, { duration: 0.5 }, 3.0)
-
-  // 6. Tags slide out
-  tl.to('.intro-tag-word', {
-    y: '100%',
-    duration: 0.5,
-    stagger: 0.06,
-  }, 3.5)
-
-  // 7. Setup clip-paths for split
-  tl.call(() => {
-    gsap.set(preloader.value, {
-      clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)',
+    // Split overlay — FINAL state
+    gsap.set('.intro-split .ichar-inner', { y: '0%' })
+    gsap.set('.intro-split .ichar:not(.first-char)', { opacity: 0 })
+    gsap.set('.intro-split .first-char', {
+      x: firstCharFinalX,
+      y: firstCharFinalY,
+      fontWeight: 900,
+      scale: 0.7,
     })
-    gsap.set(splitOverlay.value, {
-      clipPath: 'polygon(0 50%, 100% 50%, 100% 100%, 0 100%)',
+    gsap.set('.intro-split .ochar-inner', { y: '0%' })
+    gsap.set('.intro-split .ochar', {
+      x: outroFinalX,
+      fontSize: isMobile ? '5rem' : '9rem',
+      fontWeight: 500,
     })
-  }, null, 3.8)
 
-  // 8. Split apart - top goes up, bottom goes down
-  tl.to(preloader.value, {
-    y: '-100%',
-    duration: 1.0,
-    ease: 'power4.inOut',
-  }, 3.8)
+    // ===== TIMELINE =====
+    const tl = gsap.timeline({ defaults: { ease }, onComplete: cleanup })
 
-  tl.to(splitOverlay.value, {
-    y: '100%',
-    duration: 1.0,
-    ease: 'power4.inOut',
-  }, 3.8)
+    // t=0.3 — Tags + Title slide IN
+    tl.to('.itag-word', { y: '0%', duration: 0.5, stagger: 0.08 }, 0.3)
+    tl.to('.intro-preloader .ichar-inner', { y: '0%', duration: 0.5, stagger: 0.03 }, 0.3)
 
-  // Fade tags overlay
-  tl.to(tagsOverlay.value, {
-    opacity: 0,
-    duration: 0.3,
-  }, 3.8)
+    // t=1.2 — HANG slides OUT
+    tl.to('.intro-preloader .ichar:not(.first-char) .ichar-inner', {
+      y: '100%', duration: 0.3, stagger: 0.02,
+    }, 1.2)
+
+    // t=1.7 — QF slides IN
+    tl.to('.intro-preloader .ochar-inner', {
+      y: '0%', duration: 0.5, stagger: 0.05,
+    }, 1.7)
+
+    // t=2.4 — Z + QF CONVERGE
+    tl.to('.intro-preloader .first-char', {
+      x: firstCharOvershootX, duration: 0.6,
+    }, 2.4)
+    tl.to('.intro-preloader .ochar', {
+      x: outroFinalX, duration: 0.6,
+    }, 2.4)
+
+    // t=3.2 — TRANSFORM to final form
+    tl.to('.intro-preloader .first-char', {
+      x: firstCharFinalX, y: firstCharFinalY, scale: 0.7, duration: 0.5,
+    }, 3.2)
+    tl.call(() => {
+      document.querySelectorAll('.intro-preloader .first-char').forEach(el => {
+        el.style.fontWeight = '900'
+      })
+    }, null, 3.2)
+
+    tl.to('.intro-preloader .ochar', {
+      x: outroFinalX,
+      fontSize: isMobile ? '5rem' : '9rem',
+      duration: 0.5,
+      onComplete: () => {
+        document.querySelectorAll('.intro-preloader .ochar').forEach(el => {
+          el.style.fontWeight = '500'
+        })
+        gsap.set(preloader.value, { clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)' })
+        gsap.set(splitOverlay.value, { clipPath: 'polygon(0 50%, 100% 50%, 100% 100%, 0 100%)' })
+      },
+    }, 3.2)
+
+    // t=3.8 — Tags slide OUT
+    tl.to('.itag-word', { y: '100%', duration: 0.4, stagger: 0.06 }, 3.8)
+
+    // t=4.2 — SPLIT APART
+    tl.to(preloader.value, { y: '-100%', duration: 0.7, ease: 'power4.inOut' }, 4.2)
+    tl.to(splitOverlay.value, { y: '100%', duration: 0.7, ease: 'power4.inOut' }, 4.2)
+    tl.to(tagsOverlay.value, { opacity: 0, duration: 0.3 }, 4.2)
+
+  } catch (e) {
+    console.error('Intro animation error:', e)
+    cleanup()
+  }
 })
 </script>
 
@@ -152,7 +181,6 @@ onMounted(() => {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  pointer-events: none;
 }
 
 .intro-preloader,
@@ -166,74 +194,82 @@ onMounted(() => {
   justify-content: center;
 }
 
-.intro-tags {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-}
+.intro-preloader,
+.intro-tags { z-index: 2; }
+.intro-split { z-index: 1; }
 
-/* Title */
+/* Title "ZHANG" */
 .intro-title {
   position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
-  align-items: center;
-  gap: 0;
+  white-space: nowrap;
 }
 
-.intro-char {
+.ichar {
+  position: relative;
   display: inline-block;
   overflow: hidden;
 }
 
-.intro-char-inner {
+.ichar-inner {
   display: inline-block;
   font-size: clamp(3rem, 8vw, 6rem);
   font-weight: 700;
-  transform: translateY(100%);
+  letter-spacing: -0.02em;
   will-change: transform;
 }
 
-/* Outro */
+/* Outro "QF" */
 .outro-title {
   position: absolute;
-  left: calc(50% + 4rem);
+  top: 50%;
+  left: calc(50% + 3rem);
+  transform: translateY(-50%);
   display: flex;
-  align-items: center;
 }
 
-.outro-char {
+.ochar {
+  position: relative;
   display: inline-block;
   overflow: hidden;
 }
 
-.outro-char-inner {
+.ochar-inner {
   display: inline-block;
-  font-size: clamp(5rem, 14vw, 14rem);
+  font-size: clamp(4rem, 10vw, 8rem);
   font-weight: 300;
-  transform: translateY(100%);
   will-change: transform;
 }
 
 /* Tags */
-.intro-tag {
+.intro-tags {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.itag {
   position: absolute;
   width: max-content;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.35);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 400;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
-.intro-tag-word {
+.itag-word {
   display: inline-block;
-  transform: translateY(100%);
   will-change: transform;
 }
 
 .tag-1 { top: 18%; left: 12%; }
 .tag-2 { bottom: 20%; left: 20%; }
 .tag-3 { bottom: 32%; right: 12%; }
+
+@media (max-width: 768px) {
+  .outro-title { left: calc(50% + 2rem); }
+}
 </style>

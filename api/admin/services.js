@@ -59,6 +59,20 @@ export default async function handler(req, res) {
       return sendJson(res, success({ deleted: true }))
     }
 
+    if (req.method === 'PATCH') {
+      // Batch reorder: expects { orders: [{ id, sort_order }, ...] }
+      const { orders } = req.body
+      if (!Array.isArray(orders)) return sendJson(res, fail('orders array is required'))
+      for (const item of orders) {
+        const { error } = await supabase
+          .from('services')
+          .update({ sort_order: item.sort_order })
+          .eq('id', item.id)
+        if (error) throw error
+      }
+      return sendJson(res, success({ reordered: true }))
+    }
+
     return sendJson(res, fail('Method not allowed', -1, 405))
   } catch (err) {
     console.error(err)

@@ -1,14 +1,31 @@
 <template>
   <div class="home">
-    <!-- Hero -->
-    <section class="hero">
-      <div class="container hero-content">
-        <span class="mono-label hero-tag">专业 · 高效 · 靠谱</span>
-        <h1 class="hero-title">从课件到网页<br />一站式设计服务</h1>
-        <p class="hero-desc">课件制作 · 网页开发 · 海报设计 · 数据处理 · 文档排版</p>
-        <div class="hero-actions">
-          <a href="#services" class="btn btn-white btn-lg">浏览服务</a>
-          <router-link to="/order/query" class="btn btn-glass btn-lg" style="color: #fff">查询订单</router-link>
+    <!-- Hero — scroll-driven canvas + 3D animation -->
+    <section class="hero" ref="heroSection">
+      <canvas ref="heroCanvas"></canvas>
+      <div class="hero-content-layer">
+        <div class="header" ref="heroHeader">
+          <span class="hero-eyebrow">ZQF Design Studio</span>
+          <h1 class="hero-title">
+            <span class="hero-title-line">Design</span>
+            <span class="hero-title-line hero-title-italic">that</span>
+            <span class="hero-title-line">delivers.</span>
+          </h1>
+          <p class="hero-tagline">课件 · 网页 · 海报 · 数据 · 排版</p>
+        </div>
+      </div>
+      <div class="hero-img-container">
+        <div class="hero-img" ref="heroImg">
+          <div class="hero-fly-text">
+            <span class="hero-fly-line">Available</span>
+            <span class="hero-fly-line hero-fly-line--small">200+ Projects · 24h Response</span>
+            <div class="hero-fly-tags">
+              <span>Courseware</span>
+              <span>Web Dev</span>
+              <span>Poster</span>
+              <span>Data</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -33,43 +50,45 @@
     <!-- Services -->
     <section id="services" class="section">
       <div class="container">
-        <h2 class="section-title">服务项目</h2>
-        <p class="section-subtitle">选择你需要的专业服务</p>
-
-        <!-- Search -->
-        <div class="search-wrap">
-          <div class="search-poda">
-            <div class="search-glow"></div>
-            <div class="search-dark-border"></div>
-            <div class="search-dark-border"></div>
-            <div class="search-dark-border"></div>
-            <div class="search-white"></div>
-            <div class="search-border"></div>
-            <div class="search-main">
-              <input placeholder="搜索服务..." type="text" v-model="searchQuery" class="search-input" />
-              <div class="search-input-mask"></div>
-              <div class="search-pink-mask"></div>
-              <div class="search-filter-border"></div>
-              <div class="search-filter-icon">
-                <svg preserveAspectRatio="none" height="27" width="27" viewBox="4.8 4.56 14.832 15.408" fill="none">
-                  <path d="M8.16 6.65002H15.83C16.47 6.65002 16.99 7.17002 16.99 7.81002V9.09002C16.99 9.56002 16.7 10.14 16.41 10.43L13.91 12.64C13.56 12.93 13.33 13.51 13.33 13.98V16.48C13.33 16.83 13.1 17.29 12.81 17.47L12 17.98C11.24 18.45 10.2 17.92 10.2 16.99V13.91C10.2 13.5 9.97 12.98 9.73 12.69L7.52 10.36C7.23 10.08 7 9.55002 7 9.20002V7.87002C7 7.17002 7.52 6.65002 8.16 6.65002Z" stroke="#d6d6e6" stroke-width="1" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-              </div>
-              <div class="search-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" height="24" fill="none">
-                  <circle stroke="url(#searchGrad)" r="8" cy="11" cx="11"></circle>
-                  <line stroke="url(#searchGradL)" y2="16.65" y1="22" x2="16.65" x1="22"></line>
-                  <defs>
-                    <linearGradient gradientTransform="rotate(50)" id="searchGrad">
-                      <stop stop-color="#f8e7f8" offset="0%"></stop>
-                      <stop stop-color="#b6a9b7" offset="50%"></stop>
-                    </linearGradient>
-                    <linearGradient id="searchGradL">
-                      <stop stop-color="#b6a9b7" offset="0%"></stop>
-                      <stop stop-color="#837484" offset="50%"></stop>
-                    </linearGradient>
-                  </defs>
-                </svg>
+        <div class="services-header">
+          <div>
+            <h2 class="section-title">服务项目</h2>
+            <p class="section-subtitle">选择你需要的专业服务</p>
+          </div>
+          <div class="search-wrap">
+            <div class="search-poda">
+              <div class="search-glow"></div>
+              <div class="search-dark-border"></div>
+              <div class="search-dark-border"></div>
+              <div class="search-dark-border"></div>
+              <div class="search-white"></div>
+              <div class="search-border"></div>
+              <div class="search-main">
+                <input placeholder="搜索服务..." type="text" v-model="searchQuery" class="search-input" />
+                <div class="search-input-mask"></div>
+                <div class="search-pink-mask"></div>
+                <div class="search-filter-border"></div>
+                <div class="search-filter-icon">
+                  <svg preserveAspectRatio="none" height="27" width="27" viewBox="4.8 4.56 14.832 15.408" fill="none">
+                    <path d="M8.16 6.65002H15.83C16.47 6.65002 16.99 7.17002 16.99 7.81002V9.09002C16.99 9.56002 16.7 10.14 16.41 10.43L13.91 12.64C13.56 12.93 13.33 13.51 13.33 13.98V16.48C13.33 16.83 13.1 17.29 12.81 17.47L12 17.98C11.24 18.45 10.2 17.92 10.2 16.99V13.91C10.2 13.5 9.97 12.98 9.73 12.69L7.52 10.36C7.23 10.08 7 9.55002 7 9.20002V7.87002C7 7.17002 7.52 6.65002 8.16 6.65002Z" stroke="#d6d6e6" stroke-width="1" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                </div>
+                <div class="search-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" height="24" fill="none">
+                    <circle stroke="url(#searchGrad)" r="8" cy="11" cx="11"></circle>
+                    <line stroke="url(#searchGradL)" y2="16.65" y1="22" x2="16.65" x1="22"></line>
+                    <defs>
+                      <linearGradient gradientTransform="rotate(50)" id="searchGrad">
+                        <stop stop-color="#f8e7f8" offset="0%"></stop>
+                        <stop stop-color="#b6a9b7" offset="50%"></stop>
+                      </linearGradient>
+                      <linearGradient id="searchGradL">
+                        <stop stop-color="#b6a9b7" offset="0%"></stop>
+                        <stop stop-color="#837484" offset="50%"></stop>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
               </div>
             </div>
           </div>
@@ -92,18 +111,57 @@
       </div>
     </section>
 
-    <!-- More Cases -->
-    <section class="section section--light">
-      <div class="container" style="text-align: center">
-        <h2 class="section-title">更多案例</h2>
-        <p class="section-subtitle">浏览更多设计作品与项目案例</p>
-        <button class="btn btn-primary btn-lg cases-btn" @click="showCaseModal = true">
-          查看案例作品
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        </button>
+    <!-- More Cases — warm section -->
+    <section class="section cases-section">
+      <div class="container">
+        <div class="cases-inner">
+          <div class="cases-left">
+            <span class="mono-label cases-tag">Portfolio</span>
+            <h2 class="cases-title">每个项目<br/>都值得认真设计</h2>
+            <p class="cases-desc">从课件排版到品牌网页，每一份交付都经过打磨。添加好友查看完整作品集，找到你需要的风格。</p>
+            <button class="cases-btn" @click="showCaseModal = true">
+              <span>查看案例作品</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+          <div class="cases-right">
+            <div class="cases-card">
+              <div class="cases-card__img cases-card__img--1"></div>
+              <span class="cases-card__label">Courseware Design</span>
+            </div>
+            <div class="cases-card">
+              <div class="cases-card__img cases-card__img--2"></div>
+              <span class="cases-card__label">Web Development</span>
+            </div>
+            <div class="cases-card">
+              <div class="cases-card__img cases-card__img--3"></div>
+              <span class="cases-card__label">Visual Design</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="cases-stats">
+          <div class="stat">
+            <span class="stat-num">200+</span>
+            <span class="stat-label">完成项目</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">50+</span>
+            <span class="stat-label">合作客户</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">99%</span>
+            <span class="stat-label">好评率</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">24h</span>
+            <span class="stat-label">响应时间</span>
+          </div>
+        </div>
       </div>
 
-      <!-- 加好友看案例 Modal -->
+      <!-- Modal -->
       <div class="modal-overlay" v-if="showCaseModal" @click.self="showCaseModal = false">
         <div class="modal-box">
           <h3 class="modal-title">查看案例作品</h3>
@@ -123,75 +181,58 @@
       </div>
     </section>
 
-    <!-- Contact -->
-    <section id="contact" class="section section--dark">
-      <div class="container contact">
-        <h2 class="section-title" style="color: var(--color-white)">联系我</h2>
-        <p class="section-subtitle" style="color: rgba(255,255,255,0.6)">
-          有任何疑问？随时联系我咨询
-        </p>
-        <div class="contact-cards">
-          <!-- QQ Bloom Button -->
-          <button class="bloom-btn" @click="copyToClipboard('826857706', 'QQ号已复制')">
-            <div class="bloom-container">
-              <div class="button-container-main">
-                <div class="button-inner">
-                  <div class="back qq-back"></div>
-                  <div class="front qq-front">
-                    <svg class="bloom-svg" viewBox="0 0 16 16" fill="currentColor">
-                      <path d="M6.048 3.323c.022.277-.13.523-.338.55-.21.026-.397-.176-.419-.453s.13-.523.338-.55c.21-.026.397.176.42.453Zm2.265-.24c-.603-.146-.894.256-.936.333-.027.048-.008.117.037.15.045.035.092.025.119-.003.361-.39.751-.172.829-.129l.011.007c.053.024.147.028.193-.098.023-.063.017-.11-.006-.142-.016-.023-.089-.08-.247-.118"/>
-                      <path d="M11.727 6.719c0-.022.01-.375.01-.557 0-3.07-1.45-6.156-5.015-6.156S1.708 3.092 1.708 6.162c0 .182.01.535.01.557l-.72 1.795a26 26 0 0 0-.534 1.508c-.68 2.187-.46 3.093-.292 3.113.36.044 1.401-1.647 1.401-1.647 0 .979.504 2.256 1.594 3.179-.408.126-.907.319-1.228.556-.29.213-.253.43-.201.518.228.386 3.92.246 4.985.126 1.065.12 4.756.26 4.984-.126.052-.088.088-.305-.2-.518-.322-.237-.822-.43-1.23-.557 1.09-.922 1.594-2.2 1.594-3.178 0 0 1.041 1.69 1.401 1.647.168-.02.388-.926-.292-3.113a26 26 0 0 0-.534-1.508l-.72-1.795ZM9.773 5.53a.1.1 0 0 1-.009.096c-.109.159-1.554.943-3.033.943h-.017c-1.48 0-2.925-.784-3.034-.943a.1.1 0 0 1-.018-.055q0-.022.01-.04c.13-.287 1.43-.606 3.042-.606h.017c1.611 0 2.912.319 3.042.605m-4.32-.989c-.483.022-.896-.529-.922-1.229s.344-1.286.828-1.308c.483-.022.896.529.922 1.23.027.7-.344 1.286-.827 1.307Zm2.538 0c-.484-.022-.854-.607-.828-1.308.027-.7.44-1.25.923-1.23.483.023.853.608.827 1.309-.026.7-.439 1.251-.922 1.23ZM2.928 8.99q.32.063.639.117v2.336s1.104.222 2.21.068V9.363q.49.027.937.023h.017c1.117.013 2.474-.136 3.786-.396.097.622.151 1.386.097 2.284-.146 2.45-1.6 3.99-3.846 4.012h-.091c-2.245-.023-3.7-1.562-3.846-4.011-.054-.9 0-1.663.097-2.285"/>
-                    </svg>
-                  </div>
-                </div>
-                <div class="button-glass">
-                  <div class="back"></div>
-                  <div class="front"></div>
-                </div>
+    <!-- Footer — sticky reveal style, unified -->
+    <footer id="contact" ref="footerEl">
+      <div class="footer-container" ref="footerContainer">
+        <div class="footer-content">
+          <div class="footer-main-block">
+            <div class="footer-left">
+              <h2 class="footer-heading">开始你的<br/>下一个项目</h2>
+              <p class="footer-tagline">专业设计服务，高效交付，值得信赖</p>
+              <div class="footer-icons">
+                <button class="footer-icon-btn" @click="copyToClipboard('826857706', 'QQ号已复制')">
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.048 3.323c.022.277-.13.523-.338.55-.21.026-.397-.176-.419-.453s.13-.523.338-.55c.21-.026.397.176.42.453Zm2.265-.24c-.603-.146-.894.256-.936.333-.027.048-.008.117.037.15.045.035.092.025.119-.003.361-.39.751-.172.829-.129l.011.007c.053.024.147.028.193-.098.023-.063.017-.11-.006-.142-.016-.023-.089-.08-.247-.118"/><path d="M11.727 6.719c0-.022.01-.375.01-.557 0-3.07-1.45-6.156-5.015-6.156S1.708 3.092 1.708 6.162c0 .182.01.535.01.557l-.72 1.795a26 26 0 0 0-.534 1.508c-.68 2.187-.46 3.093-.292 3.113.36.044 1.401-1.647 1.401-1.647 0 .979.504 2.256 1.594 3.179-.408.126-.907.319-1.228.556-.29.213-.253.43-.201.518.228.386 3.92.246 4.985.126 1.065.12 4.756.26 4.984-.126.052-.088.088-.305-.2-.518-.322-.237-.822-.43-1.23-.557 1.09-.922 1.594-2.2 1.594-3.178 0 0 1.041 1.69 1.401 1.647.168-.02.388-.926-.292-3.113a26 26 0 0 0-.534-1.508l-.72-1.795Z"/></svg>
+                  <span>QQ</span>
+                </button>
+                <button class="footer-icon-btn" @click="copyToClipboard('ZQFservice', '微信号已复制')">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.68 4.025c-3.837 0-6.953 2.708-6.953 6.048 0 3.342 3.116 6.048 6.953 6.048.748 0 1.47-.1 2.15-.3a.714.714 0 01.574.08l1.432.84a.276.276 0 00.14.045.24.24 0 00.234-.236c0-.058-.023-.115-.038-.17l-.294-1.12a.477.477 0 01.17-.533c1.478-1.094 2.39-2.761 2.39-4.654 0-3.34-3.117-6.048-6.954-6.048h.2zm-2.136 3.34c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948zm4.272 0c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948z"/></svg>
+                  <span>微信</span>
+                </button>
               </div>
-              <div class="bloom bloom1"></div>
-              <div class="bloom bloom2"></div>
             </div>
-            <span class="bloom-label">QQ</span>
-            <span class="bloom-hint">点击复制</span>
-          </button>
-
-          <!-- WeChat Bloom Button -->
-          <button class="bloom-btn" @click="copyToClipboard('ZQFservice', '微信号已复制')">
-            <div class="bloom-container">
-              <div class="button-container-main">
-                <div class="button-inner">
-                  <div class="back wx-back"></div>
-                  <div class="front wx-front">
-                    <svg class="bloom-svg" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.68 4.025c-3.837 0-6.953 2.708-6.953 6.048 0 3.342 3.116 6.048 6.953 6.048.748 0 1.47-.1 2.15-.3a.714.714 0 01.574.08l1.432.84a.276.276 0 00.14.045.24.24 0 00.234-.236c0-.058-.023-.115-.038-.17l-.294-1.12a.477.477 0 01.17-.533c1.478-1.094 2.39-2.761 2.39-4.654 0-3.34-3.117-6.048-6.954-6.048h.2zm-2.136 3.34c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948zm4.272 0c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948z"/>
-                    </svg>
-                  </div>
-                </div>
-                <div class="button-glass">
-                  <div class="back"></div>
-                  <div class="front"></div>
-                </div>
+            <div class="footer-right">
+              <div class="footer-sub-col">
+                <router-link to="/order/query" class="footer-link">查询订单</router-link>
+                <router-link to="/admin/login" class="footer-link">管理后台</router-link>
+                <a class="footer-link" @click="showCaseModal = true">查看案例</a>
               </div>
-              <div class="bloom bloom1"></div>
-              <div class="bloom bloom2"></div>
             </div>
-            <span class="bloom-label">微信</span>
-            <span class="bloom-hint">点击复制</span>
-          </button>
+          </div>
+          <div class="footer-bottom">
+            <span class="footer-brand">
+              <img src="/logo.png" alt="" class="footer-logo" />
+              张千帆设计公司
+            </span>
+            <span class="footer-copy">&copy; {{ year }}</span>
+          </div>
         </div>
       </div>
-    </section>
+    </footer>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Lenis from 'lenis'
 import serviceApi from '../api/services'
 import notificationApi from '../api/notifications'
 import ServiceCard from '../components/ServiceCard.vue'
 import { useToast } from '../composables/useToast'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const route = useRoute()
 const toast = useToast()
@@ -201,6 +242,23 @@ const loading = ref(true)
 const showCaseModal = ref(false)
 const searchQuery = ref('')
 
+// Scroll animation refs
+const heroSection = ref(null)
+const heroCanvas = ref(null)
+const heroHeader = ref(null)
+const heroImg = ref(null)
+const footerEl = ref(null)
+const footerContainer = ref(null)
+let lenis = null
+let scrollTriggerInstance = null
+let footerScrollTrigger = null
+let frameImages = []
+let videoFrames = { frame: 0 }
+
+const year = new Date().getFullYear()
+
+const frameCount = 198
+
 const filteredServices = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
   if (!q) return services.value
@@ -209,6 +267,196 @@ const filteredServices = computed(() => {
     (s.description && s.description.toLowerCase().includes(q))
   )
 })
+
+function initScrollAnimation() {
+  // Lenis smooth scroll
+  lenis = new Lenis({
+    duration: 1.2,
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+  })
+
+  lenis.on('scroll', ScrollTrigger.update)
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000)
+  })
+  gsap.ticker.lagSmoothing(0)
+
+  if (!heroSection.value || !heroHeader.value) return
+
+  const canvas = heroCanvas.value
+  const context = canvas ? canvas.getContext('2d') : null
+  const hero = heroSection.value
+  const header = heroHeader.value
+  const heroImageEl = heroImg.value
+  const navEl = document.querySelector('.nav')
+
+  // Setup canvas size
+  function setCanvasSize() {
+    if (!canvas) return
+    const pixelRatio = window.devicePixelRatio || 1
+    canvas.width = window.innerWidth * pixelRatio
+    canvas.height = window.innerHeight * pixelRatio
+    canvas.style.width = window.innerWidth + 'px'
+    canvas.style.height = window.innerHeight + 'px'
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+  }
+  setCanvasSize()
+
+  // Load frame images
+  frameImages = []
+  let imagesToLoad = frameCount
+
+  const onLoad = () => {
+    imagesToLoad--
+    if (imagesToLoad <= 0) {
+      render()
+      setupScrollTrigger()
+    }
+  }
+
+  for (let i = 0; i < frameCount; i++) {
+    const img = new Image()
+    img.onload = onLoad
+    img.onerror = onLoad
+    img.src = `/frames/Image${i + 1}.jpg`
+    frameImages.push(img)
+  }
+
+  function render() {
+    if (!context) return
+    const canvasWidth = window.innerWidth
+    const canvasHeight = window.innerHeight
+    context.clearRect(0, 0, canvasWidth, canvasHeight)
+
+    const img = frameImages[videoFrames.frame]
+    if (img && img.complete && img.naturalWidth > 0) {
+      const imageAspect = img.naturalWidth / img.naturalHeight
+      const canvasAspect = canvasWidth / canvasHeight
+
+      let drawWidth, drawHeight, drawX, drawY
+      if (imageAspect > canvasAspect) {
+        drawHeight = canvasHeight
+        drawWidth = drawHeight * imageAspect
+        drawX = (canvasWidth - drawWidth) / 2
+        drawY = 0
+      } else {
+        drawWidth = canvasWidth
+        drawHeight = drawWidth / imageAspect
+        drawX = 0
+        drawY = (canvasHeight - drawHeight) / 2
+      }
+      context.drawImage(img, drawX, drawY, drawWidth, drawHeight)
+    }
+  }
+
+  function setupScrollTrigger() {
+    scrollTriggerInstance = ScrollTrigger.create({
+      trigger: hero,
+      start: 'top top',
+      end: `+=${window.innerHeight * 7}px`,
+      pin: true,
+      pinSpacing: true,
+      scrub: 1,
+      onUpdate: (self) => {
+        const progress = self.progress
+
+        // Canvas frames advance (0 - 0.9)
+        const animationProgress = Math.min(progress / 0.9, 1)
+        const targetFrame = Math.round(animationProgress * (frameCount - 1))
+        videoFrames.frame = targetFrame
+        render()
+
+        // Phase 1: Nav fade out (0 - 0.08)
+        if (navEl) {
+          if (progress <= 0.08) {
+            navEl.style.opacity = 1 - progress / 0.08
+          } else if (progress <= 0.95) {
+            navEl.style.opacity = 0
+          } else {
+            // Fade back in at end
+            navEl.style.opacity = (progress - 0.95) / 0.05
+          }
+        }
+
+        // Phase 2: Header pushes back in Z and fades (0 - 0.25)
+        if (progress <= 0.25) {
+          const zProgress = progress / 0.25
+          const translateZ = zProgress * -500
+          let opacity = 1
+          if (progress >= 0.2) {
+            const fadeProgress = Math.min((progress - 0.2) / (0.25 - 0.2), 1)
+            opacity = 1 - fadeProgress
+          }
+          header.style.transform = `translate(-50%, -50%) translateZ(${translateZ}px)`
+          header.style.opacity = opacity
+        } else {
+          header.style.opacity = 0
+        }
+
+        // Phase 3: Hero text scale-in (0.6 - 0.9)
+        if (heroImageEl) {
+          if (progress < 0.6) {
+            heroImageEl.style.transform = 'scale(0.6)'
+            heroImageEl.style.opacity = 0
+          } else if (progress >= 0.6 && progress <= 0.9) {
+            const imgProgress = (progress - 0.6) / 0.3
+            const scale = 0.6 + imgProgress * 0.4
+            const opacity = Math.min(imgProgress * 1.5, 1)
+            heroImageEl.style.transform = `scale(${scale})`
+            heroImageEl.style.opacity = opacity
+          } else {
+            heroImageEl.style.transform = 'scale(1)'
+            heroImageEl.style.opacity = 1
+          }
+        }
+      },
+    })
+
+    // Footer sticky reveal
+    if (footerEl.value && footerContainer.value) {
+      footerScrollTrigger = ScrollTrigger.create({
+        trigger: footerEl.value,
+        start: 'top bottom',
+        end: 'bottom bottom',
+        scrub: true,
+        onUpdate: (self) => {
+          const progress = self.progress
+          const yValue = -35 * (1 - progress)
+          footerContainer.value.style.transform = `translateY(${yValue}%)`
+        },
+      })
+    }
+  }
+
+  // Handle resize
+  const onResize = () => {
+    setCanvasSize()
+    render()
+    ScrollTrigger.refresh()
+  }
+  window.addEventListener('resize', onResize)
+}
+
+function destroyScrollAnimation() {
+  if (scrollTriggerInstance) {
+    scrollTriggerInstance.kill()
+    scrollTriggerInstance = null
+  }
+  if (footerScrollTrigger) {
+    footerScrollTrigger.kill()
+    footerScrollTrigger = null
+  }
+  ScrollTrigger.getAll().forEach(st => st.kill())
+  if (lenis) {
+    gsap.ticker.remove(lenis.raf)
+    lenis.destroy()
+    lenis = null
+  }
+  // Restore nav opacity
+  const navEl = document.querySelector('.nav')
+  if (navEl) gsap.set(navEl, { opacity: 1 })
+}
 
 onMounted(async () => {
   try {
@@ -228,6 +476,24 @@ onMounted(async () => {
     console.error(e)
   }
 
+  // Init scroll animation — event-driven approach
+  // Listen for custom 'intro-done' event from IntroAnimation, or init immediately if already seen
+  await nextTick()
+  if (sessionStorage.getItem('intro_seen')) {
+    initScrollAnimation()
+  } else {
+    const onIntroDone = () => {
+      window.removeEventListener('intro-done', onIntroDone)
+      setTimeout(initScrollAnimation, 200)
+    }
+    window.addEventListener('intro-done', onIntroDone)
+    // Safety fallback: init after 8s regardless
+    setTimeout(() => {
+      window.removeEventListener('intro-done', onIntroDone)
+      if (!lenis) initScrollAnimation()
+    }, 8000)
+  }
+
   // Handle hash scroll from other pages
   if (route.hash === '#contact') {
     await nextTick()
@@ -235,6 +501,10 @@ onMounted(async () => {
       document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
     }, 300)
   }
+})
+
+onUnmounted(() => {
+  destroyScrollAnimation()
 })
 
 function copyToClipboard(text, msg) {
@@ -253,47 +523,153 @@ function copyToClipboard(text, msg) {
 </script>
 
 <style scoped>
+/* ============================================
+   Hero Section — vh-style layout
+   ============================================ */
 .hero {
-  background: linear-gradient(135deg, #22c55e 0%, #eab308 25%, #8b5cf6 60%, #ec4899 100%);
-  padding: var(--space-12) 0;
-  min-height: 60vh;
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.hero canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.hero-content-layer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.header {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateZ(0px);
+  width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 1rem;
+  text-align: center;
+  color: #241910;
+  will-change: transform, opacity;
+  transform-origin: center;
 }
 
-.hero-content {
-  color: var(--color-white);
-}
-
-.hero-tag {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 6px 16px;
-  border-radius: var(--radius-pill);
-  margin-bottom: var(--space-4);
-  color: var(--color-white);
-  font-size: 0.8125rem;
-  letter-spacing: 0.54px;
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  opacity: 0.4;
+  color: #241910;
 }
 
 .hero-title {
-  color: var(--color-white);
-  margin-bottom: var(--space-4);
-  max-width: 600px;
-}
-
-.hero-desc {
-  font-size: 1.25rem;
-  font-weight: 340;
-  opacity: 0.9;
-  letter-spacing: -0.1px;
-  margin-bottom: var(--space-6);
-}
-
-.hero-actions {
   display: flex;
-  gap: var(--space-3);
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 70%;
+}
+
+.hero-title-line {
+  font-family: var(--font-sans);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 300;
+  line-height: 0.95;
+  color: #241910;
+  letter-spacing: -0.04em;
+}
+
+.hero-title-italic {
+  font-style: italic;
+  font-weight: 300;
+  opacity: 0.6;
+}
+
+.hero-tagline {
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  opacity: 0.4;
+  color: #241910;
+  margin-top: 0.5rem;
+}
+
+.hero-img-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.hero-img {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  transform: scale(0.6);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* Hero fly-in text */
+.hero-fly-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+}
+
+.hero-fly-line {
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.hero-fly-line--small {
+  font-size: clamp(0.875rem, 1.5vw, 1.125rem);
+  font-weight: 340;
+  opacity: 0.7;
+  letter-spacing: 0.06em;
+}
+
+.hero-fly-tags {
+  display: flex;
+  gap: 8px;
   flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.hero-fly-tags span {
+  font-size: 0.75rem;
+  padding: 5px 14px;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  opacity: 0.6;
 }
 
 /* Notification banner */
@@ -336,14 +712,6 @@ function copyToClipboard(text, msg) {
   padding: var(--space-12) 0;
 }
 
-.section--dark {
-  background: var(--color-gray-900);
-}
-
-.section--light {
-  background: var(--color-gray-100);
-}
-
 .section-title {
   margin-bottom: var(--space-2);
 }
@@ -352,14 +720,25 @@ function copyToClipboard(text, msg) {
   font-size: 1.125rem;
   font-weight: 340;
   color: var(--color-gray-500);
+}
+
+/* Services header + search layout */
+.services-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
   margin-bottom: var(--space-8);
+}
+
+.services-header .section-title {
+  margin-bottom: var(--space-1);
 }
 
 /* Search Input */
 .search-wrap {
   display: flex;
-  justify-content: center;
-  margin-bottom: var(--space-8);
+  justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .search-empty {
@@ -471,13 +850,11 @@ function copyToClipboard(text, msg) {
   transition: all 2s;
 }
 
-/* Hover rotations */
 .search-poda:hover > .search-dark-border::before { transform: translate(-50%, -50%) rotate(-98deg); }
 .search-poda:hover > .search-glow::before { transform: translate(-50%, -50%) rotate(-120deg); }
 .search-poda:hover > .search-white::before { transform: translate(-50%, -50%) rotate(-97deg); }
 .search-poda:hover > .search-border::before { transform: translate(-50%, -50%) rotate(-110deg); }
 
-/* Focus rotations */
 .search-poda:focus-within > .search-dark-border::before { transform: translate(-50%, -50%) rotate(442deg); transition: all 4s; }
 .search-poda:focus-within > .search-glow::before { transform: translate(-50%, -50%) rotate(420deg); transition: all 4s; }
 .search-poda:focus-within > .search-white::before { transform: translate(-50%, -50%) rotate(443deg); transition: all 4s; }
@@ -522,12 +899,6 @@ function copyToClipboard(text, msg) {
   gap: var(--space-4);
 }
 
-.cases-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
 @media (max-width: 960px) {
   .services-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -538,9 +909,22 @@ function copyToClipboard(text, msg) {
   .services-grid {
     grid-template-columns: 1fr;
   }
-  .hero {
-    min-height: 50vh;
-    padding: var(--space-8) 0;
+  .services-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  .search-wrap {
+    justify-content: flex-start;
+  }
+  .hero-title-line {
+    font-size: clamp(2rem, 10vw, 3.5rem);
+  }
+  .hero-title {
+    width: 90%;
+  }
+  .hero-img-container {
+    width: calc(100% - 2rem);
   }
 }
 
@@ -592,180 +976,350 @@ function copyToClipboard(text, msg) {
   100% { background-position: 200% 0; }
 }
 
-.contact {
-  text-align: center;
-}
-
-.contact-cards {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-10);
-  margin-top: var(--space-6);
-  flex-wrap: wrap;
-}
-
-.contact-hint {
-  margin-top: var(--space-5);
-  font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.3);
-}
-
 /* ============================================
-   Bloom Button Styles
+   Cases Section — warm, clean
    ============================================ */
-.bloom-btn {
-  background: none;
+.cases-section {
+  background: #fefbf4;
+  color: #241910;
+  padding: var(--space-12) 0;
+}
+
+.cases-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-10);
+}
+
+.cases-left {
+  flex: 1;
+}
+
+.cases-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  opacity: 0.4;
+  margin-bottom: var(--space-3);
+}
+
+.cases-title {
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-4);
+}
+
+.cases-desc {
+  font-size: 0.9375rem;
+  font-weight: 340;
+  line-height: 1.65;
+  opacity: 0.55;
+  margin-bottom: var(--space-6);
+  max-width: 400px;
+}
+
+.cases-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: #241910;
+  color: #fefbf4;
   border: none;
+  padding: 12px 28px;
+  border-radius: var(--radius-pill);
+  font-size: 0.9375rem;
+  font-weight: 450;
   cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.cases-btn:hover {
+  opacity: 0.85;
+}
+
+.cases-right {
+  display: flex;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.cases-card {
+  flex: 1;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cases-card__img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-lg);
+}
+
+.cases-card:nth-child(2) .cases-card__img {
+  margin-top: 2rem;
+}
+
+.cases-card__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.4;
+}
+
+.cases-card__img--1 {
+  background: linear-gradient(135deg, #e8d5bc, #d4b896);
+}
+.cases-card__img--2 {
+  background: linear-gradient(135deg, #d4c5b0, #b8a68e);
+}
+.cases-card__img--3 {
+  background: linear-gradient(135deg, #c9b99a, #a89570);
+}
+
+/* Stats */
+.cases-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-10);
+  padding-top: var(--space-8);
+  border-top: 1px solid rgba(36, 25, 16, 0.1);
+}
+
+.stat {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.stat-num {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #241910;
+}
+
+.stat-label {
+  font-size: 0.8125rem;
+  opacity: 0.4;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 768px) {
+  .cases-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+  .cases-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .cases-desc {
+    max-width: 100%;
+  }
+  .cases-right {
+    width: 100%;
+  }
+  .cases-card__img {
+    aspect-ratio: 1;
+  }
+  .cases-stats {
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  .stat {
+    flex: 0 0 40%;
+  }
+}
+
+/* ============================================
+   Footer — sticky reveal, compact
+   ============================================ */
+footer {
+  position: relative;
+  width: 100%;
+  height: 60vh;
+  background-color: #171717;
+  color: #fff;
+  overflow: hidden;
+}
+
+.footer-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 3rem 2rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(-35%);
+  will-change: transform;
+}
+
+.footer-content {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.footer-main-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.footer-left {
+  flex: 3;
+}
+
+.footer-right {
+  flex: 2;
+  display: flex;
+  gap: 3rem;
+}
+
+.footer-heading {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  width: 70%;
+  margin-bottom: var(--space-3);
+}
+
+.footer-tagline {
+  font-size: 0.875rem;
+  opacity: 0.35;
+  max-width: 280px;
+  line-height: 1.5;
+  margin-bottom: var(--space-4);
+}
+
+.footer-icons {
+  display: flex;
   gap: var(--space-3);
 }
 
-.bloom-btn .bloom-container {
-  position: relative;
-  transition: all 0.2s ease-in-out;
-}
-
-.bloom-btn .bloom-container .button-container-main {
-  width: 110px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  overflow: hidden;
-  position: relative;
-  display: grid;
-  place-content: center;
-  border-right: 5px solid white;
-  border-left: 5px solid rgba(128, 128, 128, 0.147);
-  transform: rotate(-45deg);
-  transition: all 0.5s ease-in-out;
-}
-
-.bloom-btn .bloom-container .button-container-main .button-inner {
-  height: 60px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  position: relative;
-  box-shadow: rgba(100, 100, 111, 0.5) -10px 5px 10px 0px;
-  transition: all 0.5s ease-in-out;
-}
-
-.bloom-btn .bloom-container .button-container-main .button-inner .back {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-}
-
-.bloom-btn .bloom-container .button-container-main .button-inner .front {
-  position: absolute;
-  inset: 5px;
-  border-radius: 50%;
-  display: grid;
-  place-content: center;
-}
-
-/* QQ Colors */
-.qq-back {
-  background: linear-gradient(60deg, rgb(0, 140, 255) 0%, rgb(100, 200, 255) 100%);
-}
-.qq-front {
-  background: linear-gradient(60deg, rgb(0, 120, 215) 0%, rgb(60, 175, 255) 100%);
-}
-
-/* WeChat Colors */
-.wx-back {
-  background: linear-gradient(60deg, rgb(7, 193, 96) 0%, rgb(76, 230, 140) 100%);
-}
-.wx-front {
-  background: linear-gradient(60deg, rgb(6, 165, 80) 0%, rgb(50, 200, 100) 100%);
-}
-
-.bloom-btn .bloom-container .button-container-main .button-inner .front .bloom-svg {
-  fill: #ffffff;
-  opacity: 0.5;
-  width: 30px;
-  aspect-ratio: 1;
-  transform: rotate(45deg);
-  transition: all 0.2s ease-in;
-}
-
-.bloom-btn .bloom-container .button-container-main .button-glass {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.888) 100%);
-  transform: translate(0%, -50%) rotate(0deg);
-  transform-origin: bottom center;
-  transition: all 0.5s ease-in-out;
-}
-
-.bloom-btn .bloom-container .bloom {
-  height: 1px;
-  width: 1px;
-  position: absolute;
-  background: white;
-}
-
-.bloom-btn .bloom-container .bloom1 {
-  top: 10px;
-  right: 20px;
-  box-shadow:
-    rgb(255, 255, 255) 0px 0px 10px 10px,
-    rgb(255, 255, 255) 0px 0px 20px 20px;
-}
-
-.bloom-btn .bloom-container .bloom2 {
-  bottom: 10px;
-  left: 20px;
-  box-shadow:
-    rgba(255, 255, 255, 0.5) 0px 0px 10px 10px,
-    rgba(255, 255, 255, 0.5) 0px 0px 30px 20px;
-}
-
-.bloom-btn .bloom-container:hover {
-  transform: scale(1.1);
-}
-
-.bloom-btn .bloom-container:hover .button-container-main .button-glass {
-  transform: translate(0%, -40%);
-}
-
-.bloom-btn .bloom-container:hover .button-container-main .button-inner .front .bloom-svg {
-  opacity: 1;
-  filter: drop-shadow(0 0 10px white);
-}
-
-.bloom-btn .bloom-container:active {
-  transform: scale(0.7);
-}
-
-.bloom-btn .bloom-container:active .button-container-main .button-inner {
-  transform: scale(1.2);
-}
-
-.bloom-label {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.bloom-value {
-  font-size: 1.125rem;
-  font-weight: 540;
-  color: var(--color-white);
-  letter-spacing: -0.01em;
-}
-
-.bloom-hint {
+.footer-icon-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
   font-size: 0.8125rem;
-  font-weight: 340;
-  color: rgba(255, 255, 255, 0.4);
-  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: all 0.15s;
 }
 
-/* Modal */
+.footer-icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.footer-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.footer-sub-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.footer-link {
+  font-size: 0.9375rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-link:hover {
+  color: #fff;
+}
+
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  opacity: 0.4;
+  letter-spacing: 0.02em;
+}
+
+.footer-logo {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+}
+
+.footer-copy {
+  font-size: 0.75rem;
+  opacity: 0.25;
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 768px) {
+  footer {
+    height: 65vh;
+  }
+  .footer-main-block {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .footer-heading {
+    width: 100%;
+  }
+  .footer-tagline {
+    max-width: 100%;
+  }
+  .footer-right {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+}
+
+/* ============================================
+   Modal
+   ============================================ */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -778,12 +1332,13 @@ function copyToClipboard(text, msg) {
 }
 
 .modal-box {
-  background: var(--color-white);
+  background: #fefbf4;
   border-radius: var(--radius-lg);
   padding: var(--space-8);
   max-width: 420px;
   width: 100%;
   text-align: center;
+  color: #241910;
 }
 
 .modal-title {
@@ -791,7 +1346,7 @@ function copyToClipboard(text, msg) {
 }
 
 .modal-desc {
-  color: var(--color-gray-500);
+  opacity: 0.6;
   margin-bottom: var(--space-6);
 }
 
@@ -831,17 +1386,18 @@ function copyToClipboard(text, msg) {
 
 .modal-close {
   background: none;
-  border: 1px solid var(--color-gray-200);
+  border: 1px solid rgba(36, 25, 16, 0.15);
   padding: 8px 24px;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  color: var(--color-gray-500);
+  opacity: 0.5;
   font-size: 0.875rem;
   transition: all 0.15s;
+  color: #241910;
 }
 
 .modal-close:hover {
-  background: var(--color-gray-100);
-  color: var(--color-black);
+  opacity: 1;
+  background: rgba(36, 25, 16, 0.05);
 }
 </style>
