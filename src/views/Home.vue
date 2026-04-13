@@ -17,13 +17,14 @@
       <div class="hero-img-container">
         <div class="hero-img" ref="heroImg">
           <div class="hero-fly-text">
-            <span class="hero-fly-line">Available</span>
-            <span class="hero-fly-line hero-fly-line--small">200+ Projects · 24h Response</span>
+            <p class="loader"><span>张千帆设计公司</span></p>
+            <span class="hero-fly-line">专业 · 高效 · 用心</span>
+            <span class="hero-fly-line hero-fly-line--thin">每一份交付都值得认真对待</span>
             <div class="hero-fly-tags">
-              <span>Courseware</span>
-              <span>Web Dev</span>
-              <span>Poster</span>
-              <span>Data</span>
+              <span>课件设计</span>
+              <span>网页开发</span>
+              <span>海报排版</span>
+              <span>数据处理</span>
             </div>
           </div>
         </div>
@@ -190,14 +191,20 @@
               <h2 class="footer-heading">开始你的<br/>下一个项目</h2>
               <p class="footer-tagline">专业设计服务，高效交付，值得信赖</p>
               <div class="footer-icons">
-                <button class="footer-icon-btn" @click="copyToClipboard('826857706', 'QQ号已复制')">
-                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.048 3.323c.022.277-.13.523-.338.55-.21.026-.397-.176-.419-.453s.13-.523.338-.55c.21-.026.397.176.42.453Zm2.265-.24c-.603-.146-.894.256-.936.333-.027.048-.008.117.037.15.045.035.092.025.119-.003.361-.39.751-.172.829-.129l.011.007c.053.024.147.028.193-.098.023-.063.017-.11-.006-.142-.016-.023-.089-.08-.247-.118"/><path d="M11.727 6.719c0-.022.01-.375.01-.557 0-3.07-1.45-6.156-5.015-6.156S1.708 3.092 1.708 6.162c0 .182.01.535.01.557l-.72 1.795a26 26 0 0 0-.534 1.508c-.68 2.187-.46 3.093-.292 3.113.36.044 1.401-1.647 1.401-1.647 0 .979.504 2.256 1.594 3.179-.408.126-.907.319-1.228.556-.29.213-.253.43-.201.518.228.386 3.92.246 4.985.126 1.065.12 4.756.26 4.984-.126.052-.088.088-.305-.2-.518-.322-.237-.822-.43-1.23-.557 1.09-.922 1.594-2.2 1.594-3.178 0 0 1.041 1.69 1.401 1.647.168-.02.388-.926-.292-3.113a26 26 0 0 0-.534-1.508l-.72-1.795Z"/></svg>
-                  <span>QQ</span>
-                </button>
-                <button class="footer-icon-btn" @click="copyToClipboard('ZQFservice', '微信号已复制')">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.68 4.025c-3.837 0-6.953 2.708-6.953 6.048 0 3.342 3.116 6.048 6.953 6.048.748 0 1.47-.1 2.15-.3a.714.714 0 01.574.08l1.432.84a.276.276 0 00.14.045.24.24 0 00.234-.236c0-.058-.023-.115-.038-.17l-.294-1.12a.477.477 0 01.17-.533c1.478-1.094 2.39-2.761 2.39-4.654 0-3.34-3.117-6.048-6.954-6.048h.2zm-2.136 3.34c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948zm4.272 0c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948z"/></svg>
-                  <span>微信</span>
-                </button>
+                <div class="glass-btn-wrap">
+                  <button class="glass-btn" @click="copyToClipboard('826857706', 'QQ号已复制')">
+                    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.048 3.323c.022.277-.13.523-.338.55-.21.026-.397-.176-.419-.453s.13-.523.338-.55c.21-.026.397.176.42.453Zm2.265-.24c-.603-.146-.894.256-.936.333-.027.048-.008.117.037.15.045.035.092.025.119-.003.361-.39.751-.172.829-.129l.011.007c.053.024.147.028.193-.098.023-.063.017-.11-.006-.142-.016-.023-.089-.08-.247-.118"/><path d="M11.727 6.719c0-.022.01-.375.01-.557 0-3.07-1.45-6.156-5.015-6.156S1.708 3.092 1.708 6.162c0 .182.01.535.01.557l-.72 1.795a26 26 0 0 0-.534 1.508c-.68 2.187-.46 3.093-.292 3.113.36.044 1.401-1.647 1.401-1.647 0 .979.504 2.256 1.594 3.179-.408.126-.907.319-1.228.556-.29.213-.253.43-.201.518.228.386 3.92.246 4.985.126 1.065.12 4.756.26 4.984-.126.052-.088.088-.305-.2-.518-.322-.237-.822-.43-1.23-.557 1.09-.922 1.594-2.2 1.594-3.178 0 0 1.041 1.69 1.401 1.647.168-.02.388-.926-.292-3.113a26 26 0 0 0-.534-1.508l-.72-1.795Z"/></svg>
+                    <span class="glass-btn-text">QQ</span>
+                  </button>
+                  <div class="glass-btn-shadow"></div>
+                </div>
+                <div class="glass-btn-wrap">
+                  <button class="glass-btn" @click="copyToClipboard('ZQFservice', '微信号已复制')">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.68 4.025c-3.837 0-6.953 2.708-6.953 6.048 0 3.342 3.116 6.048 6.953 6.048.748 0 1.47-.1 2.15-.3a.714.714 0 01.574.08l1.432.84a.276.276 0 00.14.045.24.24 0 00.234-.236c0-.058-.023-.115-.038-.17l-.294-1.12a.477.477 0 01.17-.533c1.478-1.094 2.39-2.761 2.39-4.654 0-3.34-3.117-6.048-6.954-6.048h.2zm-2.136 3.34c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948zm4.272 0c.515 0 .933.425.933.948a.94.94 0 01-.933.947.94.94 0 01-.933-.947c0-.523.418-.948.933-.948z"/></svg>
+                    <span class="glass-btn-text">微信</span>
+                  </button>
+                  <div class="glass-btn-shadow"></div>
+                </div>
               </div>
             </div>
             <div class="footer-right">
@@ -285,6 +292,10 @@ function preloadFrames() {
   const onLoad = () => {
     imagesToLoad--
     if (imagesToLoad <= 0) framesLoaded = true
+    // Render first frame ASAP to avoid white flash
+    if (imagesToLoad === frameCount - 1 && heroCanvas.value) {
+      renderFirstFrame()
+    }
   }
   for (let i = 0; i < frameCount; i++) {
     const img = new Image()
@@ -295,6 +306,34 @@ function preloadFrames() {
   }
 }
 preloadFrames()
+
+// Render first frame on canvas as soon as it loads
+function renderFirstFrame() {
+  const canvas = heroCanvas.value
+  if (!canvas) return
+  const context = canvas.getContext('2d')
+  const img = frameImages[0]
+  if (!img || !img.complete || !img.naturalWidth) return
+
+  const pixelRatio = window.devicePixelRatio || 1
+  canvas.width = window.innerWidth * pixelRatio
+  canvas.height = window.innerHeight * pixelRatio
+  canvas.style.width = window.innerWidth + 'px'
+  canvas.style.height = window.innerHeight + 'px'
+  context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+
+  const w = window.innerWidth
+  const h = window.innerHeight
+  const imageAspect = img.naturalWidth / img.naturalHeight
+  const canvasAspect = w / h
+  let dw, dh, dx, dy
+  if (imageAspect > canvasAspect) {
+    dh = h; dw = dh * imageAspect; dx = (w - dw) / 2; dy = 0
+  } else {
+    dw = w; dh = dw / imageAspect; dx = 0; dy = (h - dh) / 2
+  }
+  context.drawImage(img, dx, dy, dw, dh)
+}
 
 function initScrollAnimation() {
   // Lenis smooth scroll
@@ -668,41 +707,105 @@ function copyToClipboard(text, msg) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   text-align: center;
   color: #fff;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
 }
 
 .hero-fly-line {
   font-family: var(--font-sans);
-  font-size: clamp(2rem, 5vw, 4rem);
+  font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 300;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
 }
 
-.hero-fly-line--small {
-  font-size: clamp(0.875rem, 1.5vw, 1.125rem);
+.hero-fly-line--thin {
+  font-size: clamp(1rem, 1.8vw, 1.375rem);
   font-weight: 340;
-  opacity: 0.7;
-  letter-spacing: 0.06em;
+  opacity: 0.65;
+  letter-spacing: 0.04em;
 }
 
 .hero-fly-tags {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .hero-fly-tags span {
-  font-size: 0.75rem;
-  padding: 5px 14px;
+  font-size: 0.875rem;
+  padding: 6px 16px;
   border-radius: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  opacity: 0.6;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  opacity: 0.7;
+  backdrop-filter: blur(4px);
+}
+
+/* Scan-line text effect */
+.loader {
+  max-width: fit-content;
+  color: rgb(242, 255, 240);
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-family: var(--font-sans);
+  position: relative;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.25rem;
+}
+
+.loader span {
+  animation: cut 2s infinite;
+  transition: 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.loader::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  background-color: rgba(255, 130, 130, 0.57);
+  top: 0px;
+  filter: blur(10px);
+  animation: scan 2s infinite;
+  left: 0;
+  z-index: 0;
+  transition: 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.loader::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 5px;
+  border-radius: 4px;
+  background-color: #ff8282;
+  top: 0px;
+  animation: scan 2s infinite;
+  left: 0;
+  z-index: 1;
+  filter: opacity(0.9);
+  transition: 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scan {
+  0% { top: 0px; }
+  25% { top: 54px; }
+  50% { top: 0px; }
+  75% { top: 54px; }
+}
+
+@keyframes cut {
+  0% { clip-path: inset(0 0 0 0); }
+  25% { clip-path: inset(100% 0 0 0); }
+  50% { clip-path: inset(0 0 100% 0); }
+  75% { clip-path: inset(0 0 0 0); }
 }
 
 /* Notification banner */
@@ -1176,14 +1279,14 @@ function copyToClipboard(text, msg) {
 }
 
 /* ============================================
-   Footer — sticky reveal, compact
+   Footer — sticky reveal, warm tone
    ============================================ */
 footer {
   position: relative;
   width: 100%;
-  height: 60vh;
-  background-color: #171717;
-  color: #fff;
+  height: 55vh;
+  background-color: #241910;
+  color: #e8e0d4;
   overflow: hidden;
 }
 
@@ -1236,7 +1339,7 @@ footer {
 
 .footer-tagline {
   font-size: 0.875rem;
-  opacity: 0.35;
+  opacity: 0.4;
   max-width: 280px;
   line-height: 1.5;
   margin-bottom: var(--space-4);
@@ -1247,29 +1350,89 @@ footer {
   gap: var(--space-3);
 }
 
-.footer-icon-btn {
+/* Glassmorphism buttons */
+.glass-btn-wrap {
+  position: relative;
+  width: 90px;
+  height: 40px;
+  border-radius: 12px;
+  overflow: visible;
+}
+
+.glass-btn {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(232, 224, 212, 0.12), rgba(232, 224, 212, 0.04));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #e8e0d4;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 450;
+  cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
-  padding: 8px 18px;
-  border-radius: var(--radius-pill);
-  font-size: 0.8125rem;
-  cursor: pointer;
-  transition: all 0.15s;
+  box-shadow:
+    inset 0 0.5px 1px rgba(232, 224, 212, 0.2),
+    inset 0 -0.5px 1px rgba(0, 0, 0, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  z-index: 1;
+  outline: none;
 }
 
-.footer-icon-btn svg {
-  width: 18px;
-  height: 18px;
+.glass-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
-.footer-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.2);
+.glass-btn-text {
+  display: inline-block;
+  transition: text-shadow 0.2s ease;
+}
+
+.glass-btn:hover {
+  transform: scale(1.06);
+  box-shadow:
+    inset 0 0.5px 1px rgba(232, 224, 212, 0.3),
+    inset 0 -0.5px 1px rgba(0, 0, 0, 0.15),
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.glass-btn:hover .glass-btn-text {
+  text-shadow: 0 0 8px rgba(232, 224, 212, 0.3);
+}
+
+.glass-btn:active {
+  transform: scale(0.97) rotateX(2deg);
+}
+
+.glass-btn-shadow {
+  position: absolute;
+  bottom: -4px;
+  left: 10%;
+  width: 80%;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+  filter: blur(8px);
+  transition: all 0.2s ease;
+  z-index: 0;
+}
+
+.glass-btn-wrap:hover .glass-btn-shadow {
+  filter: blur(12px);
+  opacity: 0.6;
+  width: 85%;
+  left: 7.5%;
 }
 
 .footer-links-col {
@@ -1287,26 +1450,26 @@ footer {
   border-radius: var(--radius-pill);
   font-size: 0.875rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(232, 224, 212, 0.55);
+  background: rgba(232, 224, 212, 0.05);
+  border: 1px solid rgba(232, 224, 212, 0.08);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .footer-link-pill svg {
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .footer-link-pill:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(232, 224, 212, 0.12);
+  color: #e8e0d4;
+  border-color: rgba(232, 224, 212, 0.2);
 }
 
 .footer-link-pill:hover svg {
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 .footer-link-pill--subtle {
@@ -1324,7 +1487,7 @@ footer {
   justify-content: space-between;
   margin-top: var(--space-8);
   padding-top: var(--space-4);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(232, 224, 212, 0.08);
 }
 
 .footer-brand {
@@ -1352,7 +1515,7 @@ footer {
 
 @media (max-width: 768px) {
   footer {
-    height: 65vh;
+    height: 60vh;
   }
   .footer-main-block {
     flex-direction: column;
