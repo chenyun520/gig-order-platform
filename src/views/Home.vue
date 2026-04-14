@@ -1116,8 +1116,8 @@ function copyToClipboard(text, msg) {
    Cases Section — warm, clean
    ============================================ */
 .cases-section {
-  background: #fefbf4;
-  color: #241910;
+  background: #0a0a0a;
+  color: #e8e0d4;
   padding: var(--space-12) 0;
 }
 
@@ -1162,8 +1162,8 @@ function copyToClipboard(text, msg) {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  background: #241910;
-  color: #fefbf4;
+  background: #e8e0d4;
+  color: #0a0a0a;
   border: none;
   padding: 12px 28px;
   border-radius: var(--radius-pill);
@@ -1210,13 +1210,13 @@ function copyToClipboard(text, msg) {
 }
 
 .cases-card__img--1 {
-  background: linear-gradient(135deg, #e8d5bc, #d4b896);
+  background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
 }
 .cases-card__img--2 {
-  background: linear-gradient(135deg, #d4c5b0, #b8a68e);
+  background: linear-gradient(135deg, #333, #1e1e1e);
 }
 .cases-card__img--3 {
-  background: linear-gradient(135deg, #c9b99a, #a89570);
+  background: linear-gradient(135deg, #252525, #151515);
 }
 
 /* Stats */
@@ -1225,7 +1225,7 @@ function copyToClipboard(text, msg) {
   justify-content: space-between;
   margin-top: var(--space-10);
   padding-top: var(--space-8);
-  border-top: 1px solid rgba(36, 25, 16, 0.1);
+  border-top: 1px solid rgba(232, 224, 212, 0.08);
 }
 
 .stat {
@@ -1241,7 +1241,7 @@ function copyToClipboard(text, msg) {
   font-size: clamp(1.5rem, 2.5vw, 2.25rem);
   font-weight: 400;
   letter-spacing: -0.02em;
-  color: #241910;
+  color: #e8e0d4;
 }
 
 .stat-label {
@@ -1285,8 +1285,8 @@ footer {
   position: relative;
   width: 100%;
   height: 55vh;
-  background-color: #241910;
-  color: #e8e0d4;
+  background-color: #fefbf4;
+  color: #241910;
   overflow: hidden;
 }
 
@@ -1365,10 +1365,10 @@ footer {
   height: 100%;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(232, 224, 212, 0.12), rgba(232, 224, 212, 0.04));
+  background: linear-gradient(135deg, rgba(36, 25, 16, 0.08), rgba(36, 25, 16, 0.03));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  color: #e8e0d4;
+  color: #241910;
   font-family: var(--font-sans);
   font-size: 0.8125rem;
   font-weight: 450;
@@ -1378,10 +1378,10 @@ footer {
   justify-content: center;
   gap: 6px;
   box-shadow:
-    inset 0 0.5px 1px rgba(232, 224, 212, 0.2),
-    inset 0 -0.5px 1px rgba(0, 0, 0, 0.1),
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    0 1px 3px rgba(0, 0, 0, 0.2);
+    inset 0 0.5px 1px rgba(36, 25, 16, 0.1),
+    inset 0 -0.5px 1px rgba(0, 0, 0, 0.05),
+    0 4px 12px rgba(36, 25, 16, 0.08),
+    0 1px 3px rgba(36, 25, 16, 0.06);
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
   z-index: 1;
   outline: none;
@@ -1401,14 +1401,14 @@ footer {
 .glass-btn:hover {
   transform: scale(1.06);
   box-shadow:
-    inset 0 0.5px 1px rgba(232, 224, 212, 0.3),
-    inset 0 -0.5px 1px rgba(0, 0, 0, 0.15),
-    0 8px 24px rgba(0, 0, 0, 0.4),
-    0 2px 6px rgba(0, 0, 0, 0.25);
+    inset 0 0.5px 1px rgba(36, 25, 16, 0.15),
+    inset 0 -0.5px 1px rgba(0, 0, 0, 0.08),
+    0 8px 24px rgba(36, 25, 16, 0.12),
+    0 2px 6px rgba(36, 25, 16, 0.08);
 }
 
 .glass-btn:hover .glass-btn-text {
-  text-shadow: 0 0 8px rgba(232, 224, 212, 0.3);
+  text-shadow: 0 0 8px rgba(36, 25, 16, 0.1);
 }
 
 .glass-btn:active {
@@ -1422,7 +1422,7 @@ footer {
   width: 80%;
   height: 16px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(36, 25, 16, 0.1);
   filter: blur(8px);
   transition: all 0.2s ease;
   z-index: 0;
@@ -1450,9 +1450,9 @@ footer {
   border-radius: var(--radius-pill);
   font-size: 0.875rem;
   font-weight: 400;
-  color: rgba(232, 224, 212, 0.55);
-  background: rgba(232, 224, 212, 0.05);
-  border: 1px solid rgba(232, 224, 212, 0.08);
+  color: rgba(36, 25, 16, 0.55);
+  background: rgba(36, 25, 16, 0.04);
+  border: 1px solid rgba(36, 25, 16, 0.08);
   text-decoration: none;
   cursor: pointer;
   transition: all 0.15s;
@@ -1463,9 +1463,9 @@ footer {
 }
 
 .footer-link-pill:hover {
-  background: rgba(232, 224, 212, 0.12);
-  color: #e8e0d4;
-  border-color: rgba(232, 224, 212, 0.2);
+  background: rgba(36, 25, 16, 0.08);
+  color: #241910;
+  border-color: rgba(36, 25, 16, 0.15);
 }
 
 .footer-link-pill:hover svg {
@@ -1487,7 +1487,7 @@ footer {
   justify-content: space-between;
   margin-top: var(--space-8);
   padding-top: var(--space-4);
-  border-top: 1px solid rgba(232, 224, 212, 0.08);
+  border-top: 1px solid rgba(36, 25, 16, 0.08);
 }
 
 .footer-brand {

@@ -103,10 +103,9 @@ function goCases() {
   gap: var(--space-2);
   font-weight: 700;
   font-size: 1.25rem;
-  color: #fff;
+  color: #241910;
   text-decoration: none;
   letter-spacing: -0.02em;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .nav-logo__img {
@@ -125,33 +124,32 @@ function goCases() {
 .nav-link {
   font-size: 0.9375rem;
   font-weight: 340;
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(36, 25, 16, 0.75);
   text-decoration: none;
   padding: 6px 12px;
   border-radius: var(--radius-pill);
   transition: background 0.15s, color 0.15s;
   cursor: pointer;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .nav-link:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(36, 25, 16, 0.08);
+  color: #241910;
 }
 
 .nav-link.router-link-active {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: rgba(36, 25, 16, 0.1);
+  color: #241910;
 }
 
 .btn-outline {
-  border-color: rgba(255, 255, 255, 0.4);
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  border-color: rgba(36, 25, 16, 0.3);
+  color: rgba(36, 25, 16, 0.75);
 }
 
 .btn-outline:hover {
-  border-color: #fff;
-  color: #fff;
+  border-color: #241910;
+  color: #241910;
 }
 
 .nav-toggle {
@@ -168,7 +166,7 @@ function goCases() {
   display: block;
   width: 20px;
   height: 2px;
-  background: #fff;
+  background: #241910;
   border-radius: 1px;
 }
 
@@ -179,9 +177,9 @@ function goCases() {
   position: relative;
   width: 56px;
   height: 28px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(36, 25, 16, 0.1);
   border-radius: 50px;
-  box-shadow: inset -4px -4px 8px rgba(255, 255, 255, 0.1), inset 4px 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: inset -4px -4px 8px rgba(36, 25, 16, 0.08), inset 4px 4px 8px rgba(36, 25, 16, 0.06);
   flex-shrink: 0;
 }
 
